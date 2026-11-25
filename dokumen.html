@@ -13,66 +13,154 @@
   <div class="panel panel-default">
     <div class="panel-heading">Semakan Dokumen Sebelum Memohon</div>
     <div class="panel-body">
-      <p>Pilih dokumen anda untuk menyemak format dan saiz mengikut Manual Pengguna. <b>Fail tidak dimuat naik</b> — semakan dibuat dalam pelayar anda sahaja.</p>
-      <p class="small text-muted" data-en="Limit used: 5MB per file. The manual states 5MB (Tab E) but 10MB in the FAQ, so the stricter limit is used — confirm with ROY.">Had yang digunakan: 5MB setiap fail. Manual menyatakan 5MB (Tab E) tetapi 10MB dalam Soalan Lazim, jadi had yang lebih ketat digunakan — sahkan dengan ROY.</p>
-      <div class="progress"><div class="progress-bar progress-bar-success" id="doc-bar" style="width:0"></div></div>
-      <p id="doc-summary" aria-live="polite"></p>
-      <table class="table table-bordered doc-table">
-        <thead><tr><th>Dokumen</th><th>Format</th><th>Fail</th><th>Hasil Semakan</th></tr></thead>
-        <tbody id="doc-rows"></tbody>
-      </table>
+      <p data-en="Drop &lt;b&gt;all your documents at once&lt;/b&gt;. The system recognises each document, checks it against the User Manual rules and shows what is still missing. &lt;b&gt;Files are not uploaded&lt;/b&gt; — everything is checked in your browser.">Masukkan <b>semua dokumen anda sekaligus</b>. Sistem akan mengenal pasti setiap dokumen, menyemaknya mengikut Manual Pengguna dan menunjukkan apa yang masih belum ada. <b>Fail tidak dimuat naik</b> — semakan dibuat dalam pelayar anda sahaja.</p>
+
+      <label class="doc-drop" id="drop" for="doc-input">
+        <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span>
+        <b>Seret semua dokumen ke sini</b>
+        <span>atau klik untuk memilih fail (PDF, JPG, PNG)</span>
+        <input type="file" id="doc-input" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+      </label>
+
+      <div class="row doc-flow">
+        <div class="col-md-5">
+          <h4><b>Dokumen diperlukan</b> <small id="doc-count"></small></h4>
+          <div class="progress"><div class="progress-bar progress-bar-success" id="doc-bar" style="width:0"></div></div>
+          <ul class="doc-need" id="doc-need" aria-live="polite"></ul>
+          <p class="small text-muted" data-en="Size limit used: 5MB per file. The manual says 5MB (Tab E) but 10MB in its FAQ, so the stricter limit is used — confirm with ROY.">Had saiz yang digunakan: 5MB setiap fail. Manual menyatakan 5MB (Tab E) tetapi 10MB dalam Soalan Lazimnya, jadi had yang lebih ketat digunakan — sahkan dengan ROY.</p>
+        </div>
+        <div class="col-md-7">
+          <h4><b>Fail anda</b> <button type="button" class="btn btn-link btn-xs" id="doc-clear" hidden>Kosongkan semua</button></h4>
+          <p class="text-muted" id="doc-empty">Belum ada fail dipilih.</p>
+          <ul class="doc-files" id="doc-files"></ul>
+        </div>
+      </div>
       <p class="small text-muted"><span>Sumber:</span> <a href="https://eroy.kbs.gov.my/manualpengguna/Manual_Pengguna_eroy2.html#section-5-5" target="_blank" rel="noopener">Manual Pengguna eROY, Bab 5.2, 5.5–5.7, 11.1</a></p>
     </div>
   </div>
   <footer id="footer"></footer>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="assets/rules.js"></script>
 <script>
-const state = {};  // slot id -> result of checkFile
-const tbody = document.getElementById('doc-rows');
+// Single flow: drop everything -> recognise each file -> validate -> show have / missing.
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const en = () => document.documentElement.lang === 'en';
-DOC_SLOTS.forEach(s => {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td><b class="doc-name"></b></td><td class="doc-types"></td>
-    <td><input type="file" class="form-control input-sm" accept="${s.types.map(t => t === 'jpg' ? '.jpg,.jpeg' : '.' + t).join(',')}"></td>
-    <td class="doc-result text-muted">—</td>`;
-  tr.querySelector('.doc-name').textContent = s.ms;
-  tr.querySelector('.doc-types').textContent = s.types.map(t => t.toUpperCase()).join(' / ');
-  tr.querySelector('input').setAttribute('aria-label', s.ms);
-  tr.querySelector('input').onchange = async e => {
-    const file = e.target.files[0];
-    if (!file) { delete state[s.id]; return render(); }
+const t = (ms, e) => (en() ? e : ms);
+const files = [];  // { id, file, head, text, width, height, slot, by, kind }
+let nextId = 1;
+
+async function pdfText(file) {
+  if (!window.pdfjsLib) return '';
+  try {
+    const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
+    let text = '';
+    for (let i = 1; i <= Math.min(pdf.numPages, 3); i++) {
+      text += (await (await pdf.getPage(i)).getTextContent()).items.map(it => it.str).join(' ') + ' ';
+    }
+    return text.slice(0, 20000);
+  } catch { return ''; }  // corrupt / renamed / encrypted: the format check reports it
+}
+
+async function addFiles(list) {
+  for (const file of list) {
     const head = new Uint8Array(await file.slice(0, 8).arrayBuffer());
-    let width, height;
-    if (s.id === 'logo') { try { const bmp = await createImageBitmap(file); ({ width, height } = bmp); bmp.close(); } catch {} }
-    state[s.id] = checkFile({ name: file.name, size: file.size, head, width, height }, s);
-    render();
-  };
-  tr.dataset.slot = s.id;
-  tbody.append(tr);
-});
-function render() {
-  for (const tr of tbody.rows) {
-    const s = DOC_SLOTS.find(x => x.id === tr.dataset.slot), r = state[s.id], cell = tr.querySelector('.doc-result');
-    tr.querySelector('.doc-name').textContent = en() ? s.en : s.ms;
-    tr.className = r ? (r.ok ? 'success' : 'danger') : '';
-    cell.className = 'doc-result' + (r ? '' : ' text-muted');
-    cell.replaceChildren(...(r ? r.issues.map(i => Object.assign(document.createElement('div'), {
-      textContent: (i.ok === true ? '✓ ' : i.ok === 'warn' ? '! ' : '✗ ') + (en() ? i.en : i.ms) })) : ['—']));
+    const isPdf = head[0] === 0x25 && head[1] === 0x50 && head[2] === 0x44 && head[3] === 0x46;
+    const entry = { id: nextId++, file, head, text: isPdf ? await pdfText(file) : '' };
+    if (!isPdf) { try { const bmp = await createImageBitmap(file); entry.width = bmp.width; entry.height = bmp.height; bmp.close(); } catch {} }
+    Object.assign(entry, classifyDoc({ name: file.name, text: entry.text }));
+    // An IC copy with an unknown role takes the first IC slot that is still empty.
+    if (entry.kind === 'kp' && !entry.slot) {
+      const free = ['kp_pengerusi', 'kp_setiausaha', 'kp_bendahari'].find(id => !files.some(f => f.slot === id));
+      if (free) { entry.slot = free; entry.by = 'guess'; }
+    }
+    files.push(entry);
   }
-  const required = DOC_SLOTS.filter(s => s.required), ready = required.filter(s => state[s.id]?.ok).length;
+  render();
+}
+
+const slotDef = id => DOC_SLOTS.find(s => s.id === id);
+const check = f => f.slot ? checkFile({ name: f.file.name, size: f.file.size, head: f.head, width: f.width, height: f.height }, slotDef(f.slot)) : null;
+
+function render() {
+  // Required / optional documents: have, problem, or missing.
+  const need = document.getElementById('doc-need');
+  need.replaceChildren();
+  let ready = 0;
+  const required = DOC_SLOTS.filter(s => s.required);
+  for (const s of DOC_SLOTS) {
+    const mine = files.filter(f => f.slot === s.id);
+    const good = mine.find(f => check(f).ok);
+    const li = document.createElement('li');
+    let state, note;
+    if (good) { state = 'ok'; note = good.file.name; if (s.required) ready++; }
+    else if (mine.length) { state = 'fail'; note = t('Ada, tetapi perlu dibetulkan', 'Provided, but needs fixing'); }
+    else { state = s.required ? 'missing' : 'optional'; note = s.required ? t('Belum ada', 'Not provided yet') : t('Pilihan', 'Optional'); }
+    li.className = 'need-' + state;
+    li.append(Object.assign(document.createElement('span'), { className: 'need-icon', textContent: { ok: '✓', fail: '!', missing: '✗', optional: '–' }[state] }),
+      Object.assign(document.createElement('b'), { textContent: t(s.ms, s.en) }),
+      Object.assign(document.createElement('small'), { textContent: note }));
+    if (mine.length > 1) li.append(Object.assign(document.createElement('small'), { className: 'need-dup', textContent: t(`${mine.length} fail dikesan untuk dokumen ini`, `${mine.length} files detected for this document`) }));
+    need.append(li);
+  }
+  document.getElementById('doc-count').textContent = `(${ready}/${required.length})`;
   document.getElementById('doc-bar').style.width = (ready / required.length * 100) + '%';
-  document.getElementById('doc-summary').textContent = en()
-    ? `${ready} of ${required.length} required documents ready.` : `${ready} daripada ${required.length} dokumen wajib sedia.`;
-  // Tick (never untick) home-page checklist items whose documents all passed (per-browser convenience).
+
+  // The files themselves: what each was recognised as (editable), how, and its checks.
+  const list = document.getElementById('doc-files');
+  list.replaceChildren();
+  document.getElementById('doc-empty').hidden = files.length > 0;
+  document.getElementById('doc-clear').hidden = !files.length;
+  for (const f of files) {
+    const r = check(f);
+    const li = document.createElement('li');
+    li.className = 'doc-file ' + (!f.slot ? 'doc-unknown' : r.ok ? 'doc-ok' : 'doc-bad');
+    const head = document.createElement('div');
+    head.className = 'doc-file-head';
+    head.append(Object.assign(document.createElement('b'), { textContent: f.file.name }));
+    const rm = Object.assign(document.createElement('button'), { type: 'button', className: 'close', innerHTML: '&times;' });
+    rm.setAttribute('aria-label', t('Buang ' + f.file.name, 'Remove ' + f.file.name));
+    rm.onclick = () => { files.splice(files.indexOf(f), 1); render(); };
+    head.append(rm);
+    const sel = document.createElement('select');
+    sel.className = 'form-control input-sm';
+    sel.setAttribute('aria-label', t('Jenis dokumen bagi ' + f.file.name, 'Document type for ' + f.file.name));
+    sel.append(new Option(t('— Pilih jenis dokumen —', '— Choose document type —'), ''));
+    DOC_SLOTS.forEach(s => sel.append(new Option(t(s.ms, s.en), s.id, false, s.id === f.slot)));
+    sel.onchange = () => { f.slot = sel.value || null; f.by = sel.value ? 'manual' : null; render(); };
+    const how = document.createElement('small');
+    how.className = 'doc-how';
+    how.textContent = {
+      content: t('Dikenal pasti daripada kandungan dokumen', 'Recognised from the document content'),
+      name: t('Dikenal pasti daripada nama fail', 'Recognised from the file name'),
+      guess: t('Salinan KP — sila sahkan jawatan', 'IC copy — please confirm whose'),
+      manual: t('Dipilih oleh anda', 'Chosen by you'),
+    }[f.by] || t('Tidak dapat dikenal pasti — sila pilih jenis dokumen', 'Could not recognise — please choose the document type');
+    const checks = document.createElement('div');
+    checks.className = 'doc-checks';
+    if (r) r.issues.forEach(i => checks.append(Object.assign(document.createElement('div'), {
+      className: i.ok === true ? 'text-success' : i.ok === 'warn' ? 'text-warning' : 'text-danger',
+      textContent: (i.ok === true ? '✓ ' : i.ok === 'warn' ? '! ' : '✗ ') + t(i.ms, i.en) })));
+    li.append(head, sel, how, checks);
+    list.append(li);
+  }
+
+  // Tick (never untick) home-page checklist items whose documents are all ready.
   try {
     const ck = JSON.parse(localStorage.getItem('eroy-checklist')) || [];
     for (const idx of new Set(required.map(s => s.checklist))) {
-      if (required.filter(s => s.checklist === idx).every(s => state[s.id]?.ok)) ck[idx] = true;
+      if (required.filter(s => s.checklist === idx).every(s => files.some(f => f.slot === s.id && check(f).ok))) ck[idx] = true;
     }
     localStorage.setItem('eroy-checklist', JSON.stringify(ck));
   } catch {}
 }
+
+const input = document.getElementById('doc-input'), drop = document.getElementById('drop');
+input.onchange = () => { addFiles([...input.files]); input.value = ''; };
+['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => addFiles([...e.dataTransfer.files]));
+document.getElementById('doc-clear').onclick = () => { files.length = 0; render(); };
 render();
 document.addEventListener('langchange', render);
 </script>

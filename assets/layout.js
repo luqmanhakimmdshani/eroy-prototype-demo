@@ -24,7 +24,6 @@ document.getElementById('header').innerHTML = `
           <ul class="dropdown-menu">
             <li><a href="layak.html">Semak Kelayakan</a></li>
             <li><a href="dokumen.html">Semakan Dokumen</a></li>
-            <li><a href="faq.html">Soalan Lazim (FAQ)</a></li>
           </ul>
         </li>
       </ul>

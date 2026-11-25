@@ -80,4 +80,42 @@ function checkFile(f, slot) {
   return { ok: issues.every(i => i.ok !== false), issues };
 }
 
-if (typeof module !== 'undefined') module.exports = { checkEligibility, checkFile, DOC_SLOTS };
+// Work out which required document a file is. f = { name, text? } where text is the PDF's extracted text
+// (empty for images and scanned PDFs). Content wins over the file name because names are often "scan001.pdf".
+// Returns { slot: id | null, by: 'content' | 'name' | null }.
+// ponytail: keyword scoring; swap for an AI/vision classifier if real-world files are often misread.
+const DOC_SIGNS = {
+  minit: [/minit\s+mesyuarat/i, /minutes\s+of\s+(the\s+)?meeting/i, /dicadangkan\s+oleh/i, /disokong\s+oleh/i,
+    /mesyuarat\s+(di)?tangguhkan/i, /\bagenda\b/i, /\bminit\b/i, /\bminutes\b/i],
+  kehadiran: [/senarai\s+kehadiran/i, /attendance\s+(list|sheet)/i, /\bkehadiran\b/i, /\battendance\b/i],
+  perlembagaan: [/perlembagaan/i, /undang[-\s]undang\s+tubuh/i, /\bconstitution\b/i, /\bfasal\s+\d+/i, /\bclause\s+\d+/i],
+  kp: [/kad\s+pengenalan/i, /\bmykad\b/i, /identity\s+card/i, /\bwarganegara\b/i],
+  logo: [/\blogo\b/i],
+};
+const ROLE_SIGNS = {
+  kp_pengerusi: /pengerusi|chair(man|person)?|presiden/i,
+  kp_setiausaha: /setiausaha|secretary|\bsu\b/i,
+  kp_bendahari: /bendahari|treasurer/i,
+};
+
+function classifyDoc(f) {
+  const name = f.name.replace(/[_\-.]+/g, ' ');
+  const score = (txt, k) => DOC_SIGNS[k].reduce((n, re, i) => n + (re.test(txt) ? (i < 2 ? 3 : 1) : 0), 0);
+  const best = txt => {
+    const ranked = Object.keys(DOC_SIGNS).map(k => [k, score(txt, k)]).sort((a, b) => b[1] - a[1]);
+    return ranked[0][1] > 0 && ranked[0][1] > ranked[1][1] ? ranked[0][0] : null;
+  };
+  // IC copies also need the role; take it from the name first, then from the text.
+  const role = () => Object.keys(ROLE_SIGNS).find(id => ROLE_SIGNS[id].test(name))
+    || Object.keys(ROLE_SIGNS).find(id => ROLE_SIGNS[id].test(f.text || '')) || null;
+  const nameKind = best(name.replace(/\bkp\b|\bic\b/i, ' kad pengenalan '));
+  for (const [kind, by] of [[f.text && f.text.trim().length > 30 ? best(f.text) : null, 'content'], [nameKind, 'name']]) {
+    if (!kind) continue;
+    if (kind !== 'kp') return { slot: kind, by };
+    const r = role();
+    return { slot: r, by: r ? by : null, kind: 'kp' };  // an IC copy whose role isn't known yet
+  }
+  return { slot: null, by: null };
+}
+
+if (typeof module !== 'undefined') module.exports = { checkEligibility, checkFile, classifyDoc, DOC_SLOTS };

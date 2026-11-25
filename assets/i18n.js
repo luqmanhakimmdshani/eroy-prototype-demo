@@ -71,7 +71,6 @@
     'Buka Pembantu eROY': 'Open eROY Assistant', 'Tutup': 'Close', 'Kecilkan': 'Minimise', 'Cakap': 'Speak',
     // menus (new)
     'Panduan': 'Guides', 'Semak Kelayakan': 'Eligibility Check', 'Semakan Dokumen': 'Document Check',
-    'Soalan Lazim (FAQ)': 'FAQ',
     // eligibility
     'Jawab 5 soalan ringkas untuk mengetahui sama ada anda boleh mengemukakan permohonan pendaftaran pertubuhan belia.':
       'Answer 5 short questions to find out whether you can submit a youth organisation registration.',
@@ -82,14 +81,12 @@
     'Bilangan cawangan / badan gabungan': 'Number of branches / affiliates', 'Semak kelayakan': 'Check eligibility',
     'Setiausaha': 'Secretary', 'Pengerusi': 'Chairperson', 'Bendahari': 'Treasurer', 'AJK lain': 'Other committee member',
     // documents
-    'Semakan Dokumen Sebelum Memohon': 'Document Check Before Applying', 'Dokumen': 'Document', 'Format': 'Format',
-    'Fail': 'File', 'Hasil Semakan': 'Result', 'Soalan Lazim': 'FAQ',
+    'Semakan Dokumen Sebelum Memohon': 'Document Check Before Applying',
+    'Seret semua dokumen ke sini': 'Drag all your documents here',
+    'atau klik untuk memilih fail (PDF, JPG, PNG)': 'or click to choose files (PDF, JPG, PNG)',
+    'Dokumen diperlukan': 'Required documents', 'Fail anda': 'Your files', 'Kosongkan semua': 'Clear all',
+    'Belum ada fail dipilih.': 'No files chosen yet.',
     'Manual Pengguna eROY, Bab 5.2, 5.5–5.7, 11.1': 'eROY User Manual, Chapters 5.2, 5.5–5.7, 11.1', 'Sumber:': 'Source:',
-    // FAQ
-    'Cari soalan, contoh: sijil, katalaluan, umur': 'Search questions, e.g. certificate, password, age',
-    'Cari soalan lazim': 'Search FAQ', 'Soalan popular di Pembantu eROY': 'Popular questions in the eROY Assistant',
-    'Tiada soalan sepadan.': 'No matching questions.', 'Tanya Pembantu eROY': 'Ask the eROY Assistant',
-    'Manual Pengguna eROY': 'eROY User Manual',
     // page titles
     'Sistem eROY': 'eROY System', 'Permohonan Pertukaran Setiausaha': 'Change of Secretary Application',
   };
