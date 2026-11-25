@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Prototaip] Daftar Pengguna - Sistem eROY</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <div id="header"></div>
+  <div class="panel panel-default">
+    <div class="panel-heading">DAFTAR PENGGUNA SISTEM</div>
+    <div class="panel-body">
+      <div class="perhatian">
+        <h5><b>PERHATIAN</b></h5>
+        <ol data-en="&lt;li&gt;To keep the process smooth, only the &lt;b&gt;Secretary&lt;/b&gt; or &lt;b&gt;Chairperson&lt;/b&gt;, aged 18 or above, may submit an application.&lt;/li&gt;&lt;li&gt;If the application is submitted by the &lt;b&gt;Secretary&lt;/b&gt;, it must be confirmed by the &lt;b&gt;Chairperson&lt;/b&gt;.&lt;/li&gt;&lt;li&gt;The &lt;b&gt;Secretary&lt;/b&gt; and &lt;b&gt;Chairperson&lt;/b&gt; positions must match those registered in the Sponsor Committee (AJK Penaja).&lt;/li&gt;">
+          <li>Bagi melancarkan proses permohonan, hanya <b>Setiausaha</b> atau <b>Pengerusi</b> sahaja dibenarkan mengemukakan permohonan dan telah mencapai umur 18 tahun.</li>
+          <li>Sekiranya permohonan dikemukakan oleh <b>Setiausaha</b>, permohonan tersebut hendaklah disahkan oleh <b>Pengerusi</b>.</li>
+          <li>Jawatan <b>Setiausaha</b> dan <b>Pengerusi</b> mestilah sepadan dengan jawatan yang didaftarkan dalam AJK Penaja.</li>
+        </ol>
+      </div>
+      <form class="form-horizontal" onsubmit="if(pw.value!==pw2.value){pw2.setCustomValidity('Katalaluan tidak sepadan');pw2.reportValidity();return false}">
+        <div class="form-group"><label class="col-sm-3 control-label" for="ic">No.Kad Pengenalan:*</label>
+          <div class="col-sm-5"><input id="ic" class="form-control" inputmode="numeric" pattern="\d{12}" maxlength="12" placeholder="Contoh: 900101011234" required></div></div>
+        <div class="form-group"><label class="col-sm-3 control-label" for="nama">Nama Penuh:*</label>
+          <div class="col-sm-5"><input id="nama" class="form-control" required></div></div>
+        <div class="form-group"><label class="col-sm-3 control-label" for="emel">Alamat Emel:*</label>
+          <div class="col-sm-5"><input id="emel" type="email" class="form-control" required></div></div>
+        <div class="form-group"><label class="col-sm-3 control-label" for="tel">No.Telefon Bimbit:*</label>
+          <div class="col-sm-5"><input id="tel" type="tel" class="form-control" required></div></div>
+        <div class="form-group"><label class="col-sm-3 control-label" for="pw">Katalaluan:*</label>
+          <div class="col-sm-5"><input id="pw" type="password" class="form-control" minlength="8" required>
+            <label class="small" style="font-weight:normal"><input type="checkbox" data-target="#pw"> Papar Katalaluan</label></div></div>
+        <div class="form-group"><label class="col-sm-3 control-label" for="pw2">Sahkan Katalaluan:*</label>
+          <div class="col-sm-5"><input id="pw2" type="password" class="form-control" required oninput="this.setCustomValidity('')">
+            <label class="small" style="font-weight:normal"><input type="checkbox" data-target="#pw2"> Papar Katalaluan</label></div></div>
+        <div class="form-group"><label class="col-sm-3 control-label" for="code">Kod Pengesahan:*</label>
+          <div class="col-sm-5">
+            <div class="well well-sm" style="display:inline-block;letter-spacing:6px;font:bold 20px monospace;margin-bottom:6px" id="captcha"></div>
+            <input id="code" class="form-control" required></div></div>
+        <div class="form-group"><div class="col-sm-5 col-sm-offset-3">
+          <button class="btn btn-primary">Daftar</button> <a href="index.html" class="btn btn-default">Kembali</a>
+          <div class="form-msg" style="margin-top:10px"></div></div></div>
+      </form>
+    </div>
+  </div>
+  <footer id="footer"></footer>
+</div>
+<script>captcha.textContent = Math.random().toString(36).slice(2, 7).toUpperCase();</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="assets/layout.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/ai.js"></script>
+<script src="assets/i18n.js"></script>
+</body>
+</html>

@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Prototaip] Semak Status Permohonan - Sistem eROY</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <div id="header"></div>
+  <ol class="breadcrumb"><li>Carian</li><li class="active">Semak Status Permohonan</li></ol>
+  <div class="row"><div class="col-md-8 col-md-offset-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">Semak Status Permohonan</div>
+      <div class="panel-body">
+        <p>Masukkan No. Pendaftaran Pertubuhan untuk melihat kemajuan permohonan. Tidak perlu log masuk.</p>
+        <form id="tf" class="form-inline text-center" data-live="1">
+          <label class="sr-only" for="no">No. Pendaftaran Pertubuhan</label>
+          <input id="no" class="form-control" placeholder="Contoh: PPPM-01003" required style="min-width:240px">
+          <button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Semak</button>
+        </form>
+        <p class="text-center small" style="margin-top:8px"><span>Cuba contoh:</span> <span id="samples"></span></p>
+        <div id="result" style="margin-top:20px"></div>
+      </div>
+    </div>
+  </div></div>
+  <footer id="footer"></footer>
+</div>
+<script src="assets/data.js"></script>
+<script>
+const result = document.getElementById('result');
+function show(no) {
+  const p = PERTUBUHAN.find(x => x.no.toLowerCase() === no.trim().toLowerCase());
+  history.replaceState(null, '', '?no=' + encodeURIComponent(no.trim()));
+  if (!p) { result.innerHTML = '<div class="alert alert-warning">Tiada permohonan dijumpai bagi nombor ini.</div>'; return; }
+  const steps = timeline(p);
+  result.innerHTML = `
+    <h4 class="tl-org"></h4>
+    <p><span>Status semasa:</span> <span class="label label-${p.status === 'Tolak' ? 'danger' : FINAL.includes(p.status) ? 'success' : 'warning'} tl-status"></span></p>
+    <ol class="timeline">${steps.map(s => `<li class="tl-${s.state}"><b></b><small>${s.date}</small></li>`).join('')}</ol>
+    <button type="button" class="btn btn-warning" id="explain"><span class="glyphicon glyphicon-comment"></span> Terangkan status ini dengan AI</button>`;
+  // Names/labels via textContent so data is never parsed as HTML.
+  result.querySelector('.tl-org').textContent = `${p.nama} (${p.no})`;
+  result.querySelector('.tl-status').textContent = p.status;
+  result.querySelectorAll('.timeline b').forEach((b, i) => b.textContent = steps[i].label);
+  document.getElementById('explain').onclick = () => window.eroyAsk(document.documentElement.lang === 'en'
+    ? `My organisation's application (${p.nama}) is now at the "${p.status}" stage. What does that mean and what should I do next?`
+    : `Permohonan pertubuhan saya (${p.nama}) kini di peringkat "${p.status}". Apa maksudnya dan apa yang perlu saya buat seterusnya?`);
+}
+document.getElementById('tf').onsubmit = e => { e.preventDefault(); show(no.value); };
+['PPPM-01003', 'PPPM-01004', 'PPPM-01009', 'PPPM-01012'].forEach(n => {
+  const a = document.createElement('a'); a.href = '#'; a.textContent = n; a.style.marginRight = '8px';
+  a.onclick = e => { e.preventDefault(); no.value = n; show(n); };
+  samples.append(a);
+});
+const q = new URLSearchParams(location.search).get('no');
+if (q) { no.value = q; show(q); }
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="assets/layout.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/ai.js"></script>
+<script src="assets/i18n.js"></script>
+</body>
+</html>

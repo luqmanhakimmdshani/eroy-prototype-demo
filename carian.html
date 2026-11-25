@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Prototaip] Carian Pertubuhan - Sistem eROY</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <div id="header"></div>
+  <ol class="breadcrumb"><li>Senarai</li><li class="active">Carian Pertubuhan</li></ol>
+  <div class="panel panel-default">
+    <div class="panel-heading">Senarai Carian Pertubuhan</div>
+    <div class="panel-body">
+      <form id="f" class="form-horizontal" data-live="1">
+        <div class="form-group">
+          <label class="col-sm-2 control-label">No. Pendaftaran Pertubuhan :</label><div class="col-sm-4"><input name="no" class="form-control"></div>
+          <label class="col-sm-2 control-label">Nama Pertubuhan :</label><div class="col-sm-4"><input name="nama" class="form-control"></div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Jenis Pertubuhan :</label>
+          <div class="col-sm-4"><select name="jenis" class="form-control"><option value="">Sila pilih</option><option>Tunggal</option></select></div>
+          <label class="col-sm-2 control-label">Status Pendaftaran :</label>
+          <div class="col-sm-4"><select name="status" class="form-control"><option value="">Sila pilih</option>
+            <option>Dalam Proses Semakan</option><option>Kuiri Pendaftaran</option><option>Menunggu Pembayaran</option><option>Tolak</option>
+            <option>Lulus</option><option>Kelulusan Bersyarat</option><option>Dibenarkan Menubuhkan Cawangan</option></select></div>
+        </div>
+        <div class="form-group">
+          <label class="col-sm-2 control-label">Peringkat Pertubuhan :</label>
+          <div class="col-sm-4"><select name="peringkat" class="form-control"><option value="">Sila pilih</option>
+            <option>Kebangsaan</option><option>Negeri</option><option>Daerah</option><option>Bahagian</option><option>Kawasan</option><option>Lokaliti</option></select></div>
+        </div>
+        <div class="text-center"><button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Cari</button> <button type="reset" class="btn btn-default">Set Semula</button></div>
+      </form>
+      <hr>
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped table-condensed">
+          <thead><tr><th>#</th><th>No. Pendaftaran Pertubuhan</th><th>Nama Pertubuhan</th><th>Jenis Pertubuhan</th><th>Peringkat Pertubuhan</th><th>Status Pendaftaran</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <footer id="footer"></footer>
+</div>
+<script src="assets/data.js"></script>
+<script>
+// ponytail: client-side filter over mock data; swap for a real API call when there's a backend.
+function render() {
+  const q = Object.fromEntries(new FormData(f));
+  const hit = PERTUBUHAN.filter(p =>
+    p.no.toLowerCase().includes(q.no.toLowerCase()) &&
+    p.nama.toLowerCase().includes(q.nama.toLowerCase()) &&
+    (!q.jenis || p.jenis === q.jenis) && (!q.status || p.status === q.status) && (!q.peringkat || p.peringkat === q.peringkat));
+  rows.innerHTML = hit.length ? hit.map((p, i) =>
+    `<tr><td>${i + 1}.</td><td><a href="semak.html?no=${p.no}" title="Semak status">${p.no}</a></td><td>${p.nama}</td><td>${p.jenis}</td><td>${p.peringkat}</td>` +
+    `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span></button></td></tr>`).join('')
+    : '<tr><td colspan="6" class="text-center">Tiada rekod dijumpai.</td></tr>';
+}
+// Status explainer: clicking a status asks the assistant what it means and what to do next.
+rows.onclick = e => {
+  const b = e.target.closest('.status-ai');
+  if (b) window.eroyAsk(document.documentElement.lang === 'en'
+    ? `What does the status "${b.dataset.status}" mean and what should the applicant do next?`
+    : `Apakah maksud status "${b.dataset.status}" dan apa yang perlu dilakukan oleh pemohon seterusnya?`);
+};
+f.onsubmit = e => { e.preventDefault(); render(); };
+f.onreset = () => setTimeout(render);
+render();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="assets/layout.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/ai.js"></script>
+<script src="assets/i18n.js"></script>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>[Prototaip] Permohonan Pertukaran Setiausaha - Sistem eROY</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="shell">
+  <div id="header"></div>
+  <ol class="breadcrumb"><li>Carian</li><li class="active">Permohonan Baru (Pertukaran Setiausaha)</li></ol>
+  <div class="panel panel-default">
+    <div class="panel-heading">Senarai Pertubuhan</div>
+    <div class="panel-body table-responsive">
+      <table class="table table-bordered table-striped table-condensed">
+        <thead><tr><th style="width:50px">#</th><th>Nama Pertubuhan</th><th style="width:100px">Tindakan</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+  <footer id="footer"></footer>
+</div>
+<script src="assets/data.js"></script>
+<script>
+rows.innerHTML = PERTUBUHAN.map((p, i) =>
+  `<tr><td>${i + 1}.</td><td>${p.nama}</td><td><a class="btn btn-primary btn-xs" href="index.html"><span class="glyphicon glyphicon-hand-right"></span> Pilih</a></td></tr>`).join('');
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="assets/layout.js"></script>
+<script src="assets/demo.js"></script>
+<script src="assets/ai.js"></script>
+<script src="assets/i18n.js"></script>
+</body>
+</html>
