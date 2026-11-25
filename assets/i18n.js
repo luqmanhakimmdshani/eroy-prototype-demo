@@ -68,6 +68,9 @@
     'Ya': 'Yes', 'Tidak': 'No', 'Peringkat pertubuhan': 'Organisation level',
     'Bilangan cawangan / badan gabungan': 'Number of branches / affiliates', 'Semak kelayakan': 'Check eligibility',
     'Setiausaha': 'Secretary', 'Pengerusi': 'Chairperson', 'Bendahari': 'Treasurer', 'AJK lain': 'Other committee member',
+    // eligibility & documents page
+    'Semakan Kelayakan & Dokumen': 'Eligibility & Document Check', 'Semakan Dokumen': 'Document Check',
+    'Manual Pengguna eROY, Bab 2, 3, 5 dan 11': 'eROY User Manual, Chapters 2, 3, 5 and 11',
     // documents
     'Semakan Dokumen Sebelum Memohon': 'Document Check Before Applying',
     'Seret semua dokumen ke sini': 'Drag all your documents here',

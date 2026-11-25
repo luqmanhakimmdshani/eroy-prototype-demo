@@ -94,6 +94,16 @@ html:not(.lang-en-on) #lang-toggle .lang-ms, html.lang-en-on #lang-toggle .lang-
 .doc-how { display: block; color: #777; margin: 4px 0; }
 .doc-checks div { font-size: 13px; }
 
+/* Eligibility & documents page: summary chips + step numbers */
+.prep-summary { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.prep-chip { padding: 7px 14px; border-radius: 18px; border: 1px solid #ddd; background: #f7f7f7; color: #444; font-weight: bold; text-decoration: none !important; }
+.prep-chip.prep-ok { background: #dff0d8; border-color: #b2d8a0; color: #2b5e1e; }
+.prep-chip.prep-fail { background: #fcf8e3; border-color: #f0d58a; color: #7a5b16; }
+.prep-ready { flex-basis: 100%; background: #dff0d8; border: 1px solid #b2d8a0; color: #2b5e1e; padding: 10px 14px; border-radius: 4px; }
+.prep-ready .btn { margin-left: 8px; }
+.prep-step { display: inline-block; width: 24px; height: 24px; line-height: 24px; border-radius: 50%; background: #222; color: #fff; font-weight: bold; text-align: center; margin-right: 6px; }
+#step-elig .panel-heading, #step-docs .panel-heading { text-align: left; font-weight: bold; }
+
 /* Public demo mode */
 .demo-bar { background: #b02a2a; color: #fff; text-align: center; padding: 8px 12px; font-size: 13px; position: sticky; top: 0; z-index: 1100; }
 .demo-ai { margin-left: 10px; opacity: .85; } .demo-ai.on { opacity: 1; }

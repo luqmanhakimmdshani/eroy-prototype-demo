@@ -22,8 +22,7 @@ document.getElementById('header').innerHTML = `
         <li class="dropdown">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="glyphicon glyphicon-book"></span> Panduan<span class="caret"></span></a>
           <ul class="dropdown-menu">
-            <li><a href="layak.html">Semak Kelayakan</a></li>
-            <li><a href="dokumen.html">Semakan Dokumen</a></li>
+            <li><a href="persediaan.html">Semakan Kelayakan &amp; Dokumen</a></li>
           </ul>
         </li>
       </ul>
