@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>[Prototaip] Carian Pertubuhan - Sistem eROY</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="assets/style.css?v=20261125150139">
+<link rel="stylesheet" href="assets/style.css?v=20261125150232">
 </head>
 <body>
 <div class="shell">
@@ -22,7 +22,6 @@
           <span class="input-group-btn"><button class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-search"></span> Cari</button></span>
         </div>
       </form>
-      <p class="ai-hint"><span class="ai-tag ai-part">Sebahagian AI</span> <span data-en="Most searches are understood right in your browser; only unclear words are sent to the AI.">Kebanyakan carian difahami terus dalam pelayar; hanya perkataan yang kurang jelas dihantar ke AI.</span></p>
       <div class="search-examples" id="examples"></div>
       <div class="filter-chips" id="chips" aria-live="polite"></div>
       <p class="search-note" id="search-note" aria-live="polite"></p>
@@ -63,8 +62,8 @@
   </div>
   <footer id="footer"></footer>
 </div>
-<script src="assets/data.js?v=20261125150139"></script>
-<script src="assets/search.js?v=20261125150139"></script>
+<script src="assets/data.js?v=20261125150232"></script>
+<script src="assets/search.js?v=20261125150232"></script>
 <script>
 // ponytail: client-side filter over mock data; swap for a real API call when there's a backend.
 const en = () => document.documentElement.lang === 'en';
@@ -143,7 +142,7 @@ function render() {
   rows.innerHTML = hits.map((p, i) => {
     const days = PENDING.includes(p.status) ? ` <small class="text-muted">· ${daysAtStage(p)} ${t('hari', 'days')}</small>` : '';
     return `<tr><td>${i + 1}.</td><td><a href="semak.html?no=${p.no}" title="Semak status">${p.no}</a></td><td>${p.nama}</td><td>${p.jenis}</td><td>${p.peringkat}</td>` +
-      `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span> <span class="ai-tag">AI</span></button>${days}</td></tr>`;
+      `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span></button>${days}</td></tr>`;
   }).join('');
 
   // No results: say which filter to drop, and how many results that would give.
@@ -207,10 +206,10 @@ document.addEventListener('langchange', () => { renderExamples(); render(); });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src="assets/layout.js?v=20261125150139"></script>
-<script src="assets/config.js?v=20261125150139"></script>
-<script src="assets/demo.js?v=20261125150139"></script>
-<script src="assets/ai.js?v=20261125150139"></script>
-<script src="assets/i18n.js?v=20261125150139"></script>
+<script src="assets/layout.js?v=20261125150232"></script>
+<script src="assets/config.js?v=20261125150232"></script>
+<script src="assets/demo.js?v=20261125150232"></script>
+<script src="assets/ai.js?v=20261125150232"></script>
+<script src="assets/i18n.js?v=20261125150232"></script>
 </body>
 </html>
