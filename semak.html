@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>[Prototaip] Semak Status Permohonan - Sistem eROY</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="assets/style.css?v=20261125150232">
+<link rel="stylesheet" href="assets/style.css?v=20261125150417">
 </head>
 <body>
 <div class="shell">
@@ -26,7 +26,7 @@
   </div>
   <footer id="footer"></footer>
 </div>
-<script src="assets/data.js?v=20261125150232"></script>
+<script src="assets/data.js?v=20261125150417"></script>
 <script>
 const en = () => document.documentElement.lang === 'en';
 const t = (ms, e) => (en() ? e : ms);
@@ -130,7 +130,7 @@ function show(p) {
     act.append(src);
   }
   const ask = el('button', { type: 'button', className: 'btn btn-warning btn-sm', innerHTML: '<span class="glyphicon glyphicon-comment"></span> ' });
-  ask.append(t('Tanya AI tentang status ini', 'Ask AI about this status'));
+  ask.append(t('Tanya Pembantu eROY tentang status ini', 'Ask the eROY Assistant about this status'));
   ask.onclick = () => window.eroyAsk(t(
     `Permohonan pertubuhan saya (${p.nama}) kini di peringkat "${p.status}" sejak ${days} hari. Apa maksudnya dan apa yang perlu saya buat seterusnya?`,
     `My organisation's application (${p.nama}) has been at the "${p.status}" stage for ${days} days. What does that mean and what should I do next?`));
@@ -163,10 +163,10 @@ document.addEventListener('langchange', () => current && show(current));
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src="assets/layout.js?v=20261125150232"></script>
-<script src="assets/config.js?v=20261125150232"></script>
-<script src="assets/demo.js?v=20261125150232"></script>
-<script src="assets/ai.js?v=20261125150232"></script>
-<script src="assets/i18n.js?v=20261125150232"></script>
+<script src="assets/layout.js?v=20261125150417"></script>
+<script src="assets/config.js?v=20261125150417"></script>
+<script src="assets/demo.js?v=20261125150417"></script>
+<script src="assets/ai.js?v=20261125150417"></script>
+<script src="assets/i18n.js?v=20261125150417"></script>
 </body>
 </html>

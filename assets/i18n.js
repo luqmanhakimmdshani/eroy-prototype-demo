@@ -33,7 +33,7 @@
     'Sila pilih': 'Please select', 'Cari': 'Search', 'Set Semula': 'Reset', 'Tiada rekod dijumpai.': 'No records found.',
     'No. Pendaftaran Pertubuhan': 'Registration No.', 'Nama Pertubuhan': 'Organisation Name', 'Jenis Pertubuhan': 'Type',
     'Peringkat Pertubuhan': 'Level', 'Status Pendaftaran': 'Status',
-    'Terangkan dengan AI': 'Explain with AI', 'Semak status': 'Check status',
+    'Terangkan dengan Pembantu eROY': 'Explain with the eROY Assistant', 'Semak status': 'Check status',
     'Cari pertubuhan': 'Search organisations', 'Tapis lanjut': 'Advanced filters',
     'Cth: majlis belia bukan lulus · Johor atau Kedah · masih dalam proses lebih 2 minggu':
       'E.g. youth councils not approved · Johor or Kedah · pending more than 2 weeks',
@@ -55,7 +55,7 @@
     'Permohonan Dihantar (Setiausaha)': 'Application Submitted (Secretary)', 'Keputusan': 'Decision',
     'Pengesahan Pengerusi': 'Chairperson Confirmation',
     // AI widget
-    'Tanya AI': 'Ask AI', 'Pembantu eROY': 'eROY Assistant', 'Tanya tentang pendaftaran...': 'Ask about registration...',
+    'Pembantu eROY': 'eROY Assistant', 'Tanya tentang pendaftaran...': 'Ask about registration...',
     'Jawapan AI mungkin tidak tepat. Jangan kongsi katalaluan.': 'AI answers may be inaccurate. Never share your password.',
     'Bagaimana nak daftar pertubuhan?': 'How do I register an organisation?', 'Siapa boleh buat permohonan?': 'Who can apply?',
     'Buka Pembantu eROY': 'Open eROY Assistant', 'Tutup': 'Close', 'Kecilkan': 'Minimise', 'Cakap': 'Speak',
