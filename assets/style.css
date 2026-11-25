@@ -87,8 +87,8 @@ html:not(.lang-en-on) #lang-toggle .lang-ms, html.lang-en-on #lang-toggle .lang-
 .need-optional { opacity: .75; }
 .doc-need .need-dup { color: #8a6d3b; }
 .doc-files { list-style: none; padding: 0; }
-.doc-file { border: 1px solid #e5e5e5; border-left-width: 4px; border-radius: 4px; padding: 10px 12px; margin-bottom: 8px; }
-.doc-file.doc-ok { border-left-color: #5cb85c; } .doc-file.doc-bad { border-left-color: #d9534f; } .doc-file.doc-unknown { border-left-color: #f0ad4e; background: #fffbf0; }
+.doc-file { border: 1px solid #e5e5e5; border-radius: 6px; padding: 10px 12px; margin-bottom: 8px; }
+.doc-file.doc-ok { border-color: #cfe5c4; } .doc-file.doc-bad { border-color: #ecc4c3; background: #fdf8f8; } .doc-file.doc-unknown { border-color: #f3d9a4; background: #fffbf0; }
 .doc-file-head { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 6px; word-break: break-all; }
 .doc-file select { max-width: 340px; }
 .doc-how { display: block; color: #777; margin: 4px 0; }
