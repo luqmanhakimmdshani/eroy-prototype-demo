@@ -29,10 +29,12 @@ function timeline(p) {
   if (p.status === 'Kuiri Pendaftaran') steps.push('Kuiri Pendaftaran');
   steps.push(FINAL.includes(p.status) ? p.status : 'Keputusan');
   const reached = FINAL.includes(p.status) ? steps.length - 1 : steps.indexOf(p.status);
-  const start = Date.UTC(2026, 0, 5) + Number(p.no.slice(-3)) * 86400000 * 3;
+  // Recent, deterministic dates: the current stage started 2-8 days ago, earlier stages ~9 days apart.
+  const DAY = 86400000, today = new Date(new Date().toDateString()).getTime();
+  const start = today - (reached * 9 + 2 + Number(p.no.slice(-3)) % 7) * DAY;
   return steps.map((label, i) => ({
     label,
     state: i < reached || (i === reached && FINAL.includes(p.status)) ? 'done' : i === reached ? 'current' : 'todo',
-    date: i <= reached ? new Date(start + i * 86400000 * 9).toLocaleDateString('ms-MY') : '',
+    date: i <= reached ? new Date(start + i * 9 * DAY) : null,
   }));
 }

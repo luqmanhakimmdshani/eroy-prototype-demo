@@ -104,6 +104,25 @@ html:not(.lang-en-on) #lang-toggle .lang-ms, html.lang-en-on #lang-toggle .lang-
 .prep-step { display: inline-block; width: 24px; height: 24px; line-height: 24px; border-radius: 50%; background: #222; color: #fff; font-weight: bold; text-align: center; margin-right: 6px; }
 #step-elig .panel-heading, #step-docs .panel-heading { text-align: left; font-weight: bold; }
 
+/* Status tracker */
+.track-search { display: flex; gap: 8px; max-width: 620px; margin: 0 auto; }
+.track-search .form-control { flex: 1; }
+.track-quick { text-align: center; margin: 10px 0 18px; color: #666; }
+.track-quick a { margin: 0 6px 0 2px; }
+#recent-label + #recent { margin-right: 14px; }
+.track-head { border-top: 1px solid #eee; padding-top: 16px; }
+.track-head h4 { margin: 0 0 6px; font-weight: bold; }
+.track-meta { color: #555; }
+.track-meta .label { font-size: 12px; margin-right: 6px; }
+.track-action { background: #fffbf0; border: 1px solid #f3d9a4; border-radius: 6px; padding: 14px 16px; margin-top: 16px; }
+.track-action h5 { margin: 0 0 6px; font-size: 16px; font-weight: bold; }
+.track-who { font-weight: bold; color: #7a5b16; }
+.track-action ol { padding-left: 20px; }
+.track-action ol li { margin-bottom: 5px; }
+.track-buttons { margin: 12px 0 0; }
+.track-pick { border-top: 1px solid #eee; padding-top: 12px; }
+@media (max-width: 600px) { .track-search { flex-direction: column; } }
+
 /* Public demo mode */
 .demo-bar { background: #b02a2a; color: #fff; text-align: center; padding: 8px 12px; font-size: 13px; position: sticky; top: 0; z-index: 1100; }
 .demo-ai { margin-left: 10px; opacity: .85; } .demo-ai.on { opacity: 1; }

@@ -46,12 +46,13 @@
     'Permohonan Baru (Pertukaran Setiausaha)': 'New Application (Change of Secretary)', 'Senarai Pertubuhan': 'Organisation List',
     'Tindakan': 'Action', 'Pilih': 'Select',
     // tracker
-    'Masukkan No. Pendaftaran Pertubuhan untuk melihat kemajuan permohonan. Tidak perlu log masuk.':
-      'Enter the organisation registration number to see the application progress. No login needed.',
-    'Contoh: PPPM-01003': 'Example: PPPM-01003', 'Semak': 'Check', 'Cuba contoh:': 'Try an example:', 'Status semasa:': 'Current status:',
+    'Cari permohonan dengan No. Pendaftaran atau nama pertubuhan. Tidak perlu log masuk.':
+      'Find an application by registration number or organisation name. No login needed.',
+    'Contoh: PPPM-01003 atau nama pertubuhan': 'Example: PPPM-01003 or organisation name',
+    'No. Pendaftaran atau nama pertubuhan': 'Registration number or organisation name',
+    'Semak': 'Check', 'Cuba contoh:': 'Try an example:', 'Baru disemak:': 'Recently checked:',
     'Permohonan Dihantar (Setiausaha)': 'Application Submitted (Secretary)', 'Keputusan': 'Decision',
-    'Terangkan status ini dengan AI': 'Explain this status with AI',
-    'Tiada permohonan dijumpai bagi nombor ini.': 'No application found for this number.',
+    'Pengesahan Pengerusi': 'Chairperson Confirmation',
     // AI widget
     'Tanya AI': 'Ask AI', 'Pembantu eROY': 'eROY Assistant', 'Tanya tentang pendaftaran...': 'Ask about registration...',
     'Jawapan AI mungkin tidak tepat. Jangan kongsi katalaluan.': 'AI answers may be inaccurate. Never share your password.',

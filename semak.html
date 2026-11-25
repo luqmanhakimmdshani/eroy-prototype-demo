@@ -10,52 +10,174 @@
 <div class="shell">
   <div id="header"></div>
   <ol class="breadcrumb"><li>Carian</li><li class="active">Semak Status Permohonan</li></ol>
-  <div class="row"><div class="col-md-8 col-md-offset-2">
-    <div class="panel panel-default">
-      <div class="panel-heading">Semak Status Permohonan</div>
-      <div class="panel-body">
-        <p>Masukkan No. Pendaftaran Pertubuhan untuk melihat kemajuan permohonan. Tidak perlu log masuk.</p>
-        <form id="tf" class="form-inline text-center" data-live="1">
-          <label class="sr-only" for="no">No. Pendaftaran Pertubuhan</label>
-          <input id="no" class="form-control" placeholder="Contoh: PPPM-01003" required style="min-width:240px">
-          <button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Semak</button>
-        </form>
-        <p class="text-center small" style="margin-top:8px"><span>Cuba contoh:</span> <span id="samples"></span></p>
-        <div id="result" style="margin-top:20px"></div>
-      </div>
+  <div class="panel panel-default">
+    <div class="panel-heading">Semak Status Permohonan</div>
+    <div class="panel-body">
+      <p>Cari permohonan dengan No. Pendaftaran atau nama pertubuhan. Tidak perlu log masuk.</p>
+      <form id="tf" class="track-search" data-live="1">
+        <label class="sr-only" for="no">No. Pendaftaran atau nama pertubuhan</label>
+        <input id="no" class="form-control" list="track-list" placeholder="Contoh: PPPM-01003 atau nama pertubuhan" required autocomplete="off">
+        <datalist id="track-list"></datalist>
+        <button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Semak</button>
+      </form>
+      <p class="small track-quick"><span id="recent-label" hidden>Baru disemak:</span> <span id="recent"></span>
+        <span>Cuba contoh:</span> <span id="samples"></span></p>
+      <div id="result" aria-live="polite"></div>
     </div>
-  </div></div>
+  </div>
   <footer id="footer"></footer>
 </div>
 <script src="assets/data.js"></script>
 <script>
-const result = document.getElementById('result');
-function show(no) {
-  const p = PERTUBUHAN.find(x => x.no.toLowerCase() === no.trim().toLowerCase());
-  history.replaceState(null, '', '?no=' + encodeURIComponent(no.trim()));
-  if (!p) { result.innerHTML = '<div class="alert alert-warning">Tiada permohonan dijumpai bagi nombor ini.</div>'; return; }
-  const steps = timeline(p);
-  result.innerHTML = `
-    <h4 class="tl-org"></h4>
-    <p><span>Status semasa:</span> <span class="label label-${p.status === 'Tolak' ? 'danger' : FINAL.includes(p.status) ? 'success' : 'warning'} tl-status"></span></p>
-    <ol class="timeline">${steps.map(s => `<li class="tl-${s.state}"><b></b><small>${s.date}</small></li>`).join('')}</ol>
-    <button type="button" class="btn btn-warning" id="explain"><span class="glyphicon glyphicon-comment"></span> Terangkan status ini dengan AI</button>`;
-  // Names/labels via textContent so data is never parsed as HTML.
-  result.querySelector('.tl-org').textContent = `${p.nama} (${p.no})`;
-  result.querySelector('.tl-status').textContent = p.status;
-  result.querySelectorAll('.timeline b').forEach((b, i) => b.textContent = steps[i].label);
-  document.getElementById('explain').onclick = () => window.eroyAsk(document.documentElement.lang === 'en'
-    ? `My organisation's application (${p.nama}) is now at the "${p.status}" stage. What does that mean and what should I do next?`
-    : `Permohonan pertubuhan saya (${p.nama}) kini di peringkat "${p.status}". Apa maksudnya dan apa yang perlu saya buat seterusnya?`);
+const en = () => document.documentElement.lang === 'en';
+const t = (ms, e) => (en() ? e : ms);
+const el = (tag, props) => Object.assign(document.createElement(tag), props);
+const MANUAL = 'https://eroy.kbs.gov.my/manualpengguna/Manual_Pengguna_eroy2.html#';
+const fmt = d => d.toLocaleDateString(en() ? 'en-GB' : 'ms-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+
+// What the applicant should do at each status, from the user manual. Where the manual is silent we only say who to contact.
+const NEXT = {
+  'Menunggu Pembayaran': { who: ['Anda (pemohon)', 'You (applicant)'], src: 'bab6', steps: [
+    ['Log masuk dan buka status permohonan untuk mendapatkan Biller Code dan Ref-1.', 'Log in and open the application status to get the Biller Code and Ref-1.'],
+    ['Bayar melalui perbankan internet anda (JomPay) menggunakan rujukan tersebut.', 'Pay through your internet banking (JomPay) using those references.'],
+    ['Sahkan bayaran dalam portal supaya status kewangan dikemas kini.', 'Confirm the payment in the portal so the payment status updates.'],
+    ['Jika status tidak berubah dalam 24 jam, hubungi helpdesk ROY dan lampirkan resit bank.', 'If the status hasn\'t changed within 24 hours, contact the ROY helpdesk with your bank receipt.']] },
+  'Dalam Proses Semakan': { who: ['Pegawai ROY', 'ROY officer'], src: 'bab4', steps: [
+    ['Tiada tindakan diperlukan sekarang — pegawai ROY sedang menyemak permohonan.', 'No action needed now — a ROY officer is reviewing the application.'],
+    ['Pastikan emel dan No. telefon dalam profil aktif; notifikasi dan panggilan pegawai dihantar ke situ.', 'Keep the email and phone number in your profile active; notifications and officer calls go there.']] },
+  'Kuiri Pendaftaran': { who: ['Anda (pemohon)', 'You (applicant)'], src: 'bab4', steps: [
+    ['Pegawai ROY mempunyai pertanyaan tentang permohonan anda.', 'A ROY officer has a question about your application.'],
+    ['Semak emel berdaftar anda dan pastikan telefon anda boleh dihubungi — pegawai mungkin menghubungi anda terus.', 'Check your registered email and keep your phone reachable — the officer may contact you directly.'],
+    ['Jika belum dihubungi, hubungi Pejabat ROY dengan menyebut No. Pendaftaran anda.', 'If nobody has contacted you, contact the ROY office quoting your registration number.']] },
+  'Lulus': { who: ['Anda (pemohon)', 'You (applicant)'], src: 'section-5-9', steps: [
+    ['Log masuk dan muat turun sijil digital daripada paparan status.', 'Log in and download the digital certificate from the status page.'],
+    ['Sijil hanya boleh dicetak sekali — simpan salinan digitalnya.', 'The certificate can only be printed once — keep the digital copy.'],
+    ['Selepas setiap Mesyuarat Agung Tahunan, hantar laporan tahunan dalam tempoh 60 hari.', 'After each Annual General Meeting, submit the annual report within 60 days.']] },
+  'Kelulusan Bersyarat': { who: ['Anda (pemohon)', 'You (applicant)'], src: 'bab2', steps: [
+    ['Sijil boleh dimuat turun (cetak sekali sahaja).', 'The certificate can be downloaded (print once only).'],
+    ['Anda mempunyai 2 tahun dari tarikh kelulusan bersyarat untuk memenuhi syarat keahlian / cawangan.', 'You have 2 years from conditional approval to meet the membership / branch conditions.']] },
+  'Dibenarkan Menubuhkan Cawangan': { who: ['Anda (pemohon)', 'You (applicant)'], src: 'bab2', steps: [
+    ['Cawangan kini boleh didaftarkan menggunakan Borang PPB05.', 'Branches can now be registered using form PPB05.']] },
+  'Tolak': { who: ['Pejabat ROY', 'ROY office'], src: null, steps: [
+    ['Manual Pengguna tidak menerangkan langkah selepas permohonan ditolak. Hubungi Pejabat ROY untuk sebab dan pilihan seterusnya.', 'The User Manual doesn\'t describe what happens after a rejection. Contact the ROY office for the reason and your options.']] },
+};
+
+const result = document.getElementById('result'), input = document.getElementById('no');
+let current = null;
+
+function find(q) {
+  q = q.trim().toLowerCase();
+  const exact = PERTUBUHAN.find(p => p.no.toLowerCase() === q);
+  return exact ? [exact] : PERTUBUHAN.filter(p => q && (p.nama.toLowerCase().includes(q) || p.no.toLowerCase().includes(q)));
 }
-document.getElementById('tf').onsubmit = e => { e.preventDefault(); show(no.value); };
-['PPPM-01003', 'PPPM-01004', 'PPPM-01009', 'PPPM-01012'].forEach(n => {
-  const a = document.createElement('a'); a.href = '#'; a.textContent = n; a.style.marginRight = '8px';
-  a.onclick = e => { e.preventDefault(); no.value = n; show(n); };
-  samples.append(a);
+
+function lookup(q) {
+  const hits = find(q);
+  if (hits.length === 1) return show(hits[0]);
+  current = null;
+  history.replaceState(null, '', location.pathname);
+  if (!hits.length) {
+    result.replaceChildren(el('div', { className: 'alert alert-warning', textContent: t('Tiada permohonan dijumpai. Semak ejaan atau cuba No. Pendaftaran.', 'No application found. Check the spelling or try the registration number.') }));
+    return;
+  }
+  const box = el('div', { className: 'track-pick' });
+  box.append(el('p', { textContent: t(`${hits.length} permohonan sepadan — pilih satu:`, `${hits.length} applications match — choose one:`) }));
+  const ul = el('ul', { className: 'list-unstyled' });
+  hits.forEach(p => {
+    const b = el('button', { type: 'button', className: 'btn btn-link', textContent: `${p.nama} (${p.no})` });
+    b.onclick = () => show(p);
+    ul.append(el('li')); ul.lastChild.append(b);
+  });
+  box.append(ul);
+  result.replaceChildren(box);
+}
+
+function show(p) {
+  current = p;
+  input.value = p.no;
+  history.replaceState(null, '', '?no=' + encodeURIComponent(p.no));
+  remember(p.no);
+  const steps = timeline(p), cur = steps.filter(s => s.date).pop();
+  const days = Math.round((Date.now() - cur.date.getTime()) / 86400000);
+  const final = FINAL.includes(p.status);
+
+  // Header: organisation, status, time at this stage.
+  const head = el('div', { className: 'track-head' });
+  head.append(el('h4', { textContent: `${p.nama} (${p.no})` }));
+  const meta = el('p', { className: 'track-meta' });
+  meta.append(el('span', { className: 'label label-' + (p.status === 'Tolak' ? 'danger' : final ? 'success' : 'warning'), textContent: p.status }), ' ',
+    final ? t(`Keputusan pada ${fmt(cur.date)}`, `Decided on ${fmt(cur.date)}`)
+          : t(`${days} hari di peringkat ini · dikemas kini ${fmt(cur.date)}`, `${days} days at this stage · updated ${fmt(cur.date)}`));
+  head.append(meta);
+
+  // Left: timeline.
+  const ol = el('ol', { className: 'timeline' });
+  steps.forEach(s => {
+    const li = el('li', { className: 'tl-' + s.state });
+    li.append(el('b', { textContent: s.label }), el('small', { textContent: s.date ? fmt(s.date) : t('Belum', 'Not yet') }));
+    ol.append(li);
+  });
+
+  // Right: what to do now, and who it is waiting on.
+  const n = NEXT[p.status];
+  const act = el('div', { className: 'track-action' });
+  act.append(el('h5', { textContent: final ? t('Langkah seterusnya', 'Next steps') : t('Apa perlu dibuat sekarang', 'What to do now') }));
+  act.append(el('p', { className: 'track-who', textContent: t('Menunggu tindakan: ', 'Waiting on: ') + t(...n.who) }));
+  const steps2 = el('ol');
+  n.steps.forEach(s => steps2.append(el('li', { textContent: t(...s) })));
+  act.append(steps2);
+  if (n.src) {
+    const src = el('p', { className: 'small' });
+    src.append(t('Sumber: ', 'Source: '), el('a', { href: MANUAL + n.src, target: '_blank', rel: 'noopener', textContent: t('Manual Pengguna eROY', 'eROY User Manual') }));
+    act.append(src);
+  }
+  const ask = el('button', { type: 'button', className: 'btn btn-warning btn-sm', innerHTML: '<span class="glyphicon glyphicon-comment"></span> ' });
+  ask.append(t('Tanya AI tentang status ini', 'Ask AI about this status'));
+  ask.onclick = () => window.eroyAsk(t(
+    `Permohonan pertubuhan saya (${p.nama}) kini di peringkat "${p.status}" sejak ${days} hari. Apa maksudnya dan apa yang perlu saya buat seterusnya?`,
+    `My organisation's application (${p.nama}) has been at the "${p.status}" stage for ${days} days. What does that mean and what should I do next?`));
+  const share = el('button', { type: 'button', className: 'btn btn-default btn-sm', innerHTML: '<span class="glyphicon glyphicon-link"></span> ' });
+  share.append(t('Salin pautan', 'Copy link'));
+  share.onclick = async () => {
+    try { await navigator.clipboard.writeText(location.href); share.lastChild.textContent = t('Pautan disalin', 'Link copied'); }
+    catch { share.lastChild.textContent = location.href; }
+  };
+  const btns = el('p', { className: 'track-buttons' });
+  btns.append(ask, ' ', share);
+  act.append(btns);
+
+  const row = el('div', { className: 'row' });
+  const l = el('div', { className: 'col-md-6' }), r = el('div', { className: 'col-md-6' });
+  l.append(ol); r.append(act); row.append(l, r);
+  result.replaceChildren(head, row);
+}
+
+// Recently checked applications (this browser only).
+function remember(no) {
+  let list = [];
+  try { list = JSON.parse(localStorage.getItem('eroy-recent')) || []; } catch {}
+  list = [no, ...list.filter(x => x !== no)].slice(0, 4);
+  try { localStorage.setItem('eroy-recent', JSON.stringify(list)); } catch {}
+  renderRecent(list);
+}
+function renderRecent(list) {
+  if (!list) { try { list = JSON.parse(localStorage.getItem('eroy-recent')) || []; } catch { list = []; } }
+  const box = document.getElementById('recent');
+  box.replaceChildren(...list.map(no => { const a = el('a', { href: '?no=' + no, textContent: no }); a.onclick = e => { e.preventDefault(); lookup(no); }; return a; }));
+  document.getElementById('recent-label').hidden = !list.length;
+}
+
+PERTUBUHAN.forEach(p => document.getElementById('track-list').append(new Option(p.nama, p.no)));
+['PPPM-01003', 'PPPM-01004', 'PPPM-01009', 'PPPM-01012'].forEach(no => {
+  const a = el('a', { href: '?no=' + no, textContent: no });
+  a.onclick = e => { e.preventDefault(); lookup(no); };
+  document.getElementById('samples').append(a);
 });
+document.getElementById('tf').onsubmit = e => { e.preventDefault(); lookup(input.value); };
+renderRecent();
 const q = new URLSearchParams(location.search).get('no');
-if (q) { no.value = q; show(q); }
+if (q) lookup(q);
+document.addEventListener('langchange', () => current && show(current));
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
