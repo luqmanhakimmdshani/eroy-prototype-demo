@@ -140,6 +140,8 @@ html:not(.lang-en-on) #lang-toggle .lang-ms, html.lang-en-on #lang-toggle .lang-
 .example-chip:hover, .example-chip:focus { border-style: solid; border-color: #337ab7; color: #23527c; }
 .doc-fix { font-size: 12.5px; color: #555; background: #f7f7f7; border-radius: 4px; padding: 5px 8px; margin-top: 4px; }
 
+/* AI label: a small outlined tag on every control that uses the AI. Takes the colour of its button or link. */
+.ai-tag { display: inline-block; font-size: 11px; font-weight: 600; line-height: 1.3; padding: 0 4px; border: 1px solid currentColor; border-radius: 3px; vertical-align: 1px; opacity: .85; }
 
 /* Public demo mode */
 .demo-bar { background: #b02a2a; color: #fff; text-align: center; padding: 8px 12px; font-size: 13px; position: sticky; top: 0; z-index: 1100; }

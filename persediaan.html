@@ -4,7 +4,7 @@
 <meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>[Prototaip] Semakan Kelayakan & Dokumen - Sistem eROY</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css">
-<link rel="stylesheet" href="assets/style.css?v=20261125150417">
+<link rel="stylesheet" href="assets/style.css?v=20261125151354">
 </head>
 <body>
 <div class="shell">
@@ -82,7 +82,7 @@
   <footer id="footer"></footer>
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="assets/rules.js?v=20261125150417"></script>
+<script src="assets/rules.js?v=20261125151354"></script>
 <script>
 if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 const en = () => document.documentElement.lang === 'en';
@@ -112,7 +112,8 @@ function renderElig() {
   if (elig.eligible) {
     actions.append(el('a', { className: 'btn btn-default', href: '#step-docs', textContent: t('Seterusnya: semak dokumen ↓', 'Next: check your documents ↓') }));
   } else {
-    const ask = el('button', { type: 'button', className: 'btn btn-warning', textContent: t('Tanya Pembantu eROY apa perlu dibuat', 'Ask the eROY Assistant what to do') });
+    const ask = el('button', { type: 'button', className: 'btn btn-warning', textContent: t('Tanya Pembantu eROY apa perlu dibuat', 'Ask the eROY Assistant what to do') + ' ' });
+    ask.insertAdjacentHTML('beforeend', '<span class="ai-tag">AI</span>');
     ask.onclick = () => window.eroyAsk(t('Saya belum layak mendaftar pertubuhan belia kerana: ', 'I am not yet eligible to register a youth organisation because: ')
       + elig.results.filter(r => r.ok === false).map(r => t(r.ms, r.en)).join(' ') + t(' Apa yang boleh saya lakukan?', ' What can I do?'));
     actions.append(ask);
@@ -253,10 +254,10 @@ document.addEventListener('langchange', renderAll);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src="assets/layout.js?v=20261125150417"></script>
-<script src="assets/config.js?v=20261125150417"></script>
-<script src="assets/demo.js?v=20261125150417"></script>
-<script src="assets/ai.js?v=20261125150417"></script>
-<script src="assets/i18n.js?v=20261125150417"></script>
+<script src="assets/layout.js?v=20261125151354"></script>
+<script src="assets/config.js?v=20261125151354"></script>
+<script src="assets/demo.js?v=20261125151354"></script>
+<script src="assets/ai.js?v=20261125151354"></script>
+<script src="assets/i18n.js?v=20261125151354"></script>
 </body>
 </html>
