@@ -135,6 +135,11 @@ html:not(.lang-en-on) #lang-toggle .lang-ms, html.lang-en-on #lang-toggle .lang-
 .adv-filters[open] { border: 1px solid #eee; border-radius: 6px; padding: 10px 14px; }
 .empty-help { background: #fcf8e3; border: 1px solid #faebcc; border-radius: 4px; padding: 10px 14px; }
 .empty-help .btn { margin-top: 4px; }
+.search-examples { max-width: 760px; margin: 0 auto 8px; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; }
+.examples-label { color: #666; }
+.example-chip { border: 1px dashed #c9c9c9; background: #fff; color: #444; border-radius: 16px; padding: 2px 10px; }
+.example-chip:hover, .example-chip:focus { border-style: solid; border-color: #337ab7; color: #23527c; }
+
 
 /* Public demo mode */
 .demo-bar { background: #b02a2a; color: #fff; text-align: center; padding: 8px 12px; font-size: 13px; position: sticky; top: 0; z-index: 1100; }

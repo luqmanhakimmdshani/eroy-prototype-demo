@@ -22,6 +22,7 @@
           <span class="input-group-btn"><button class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-search"></span> Cari</button></span>
         </div>
       </form>
+      <div class="search-examples" id="examples"></div>
       <div class="filter-chips" id="chips" aria-live="polite"></div>
       <p class="search-note" id="search-note" aria-live="polite"></p>
       <p class="search-note" id="fuzzy-note" aria-live="polite"></p>
@@ -100,6 +101,24 @@ function chip(k) {
   b.setAttribute('aria-label', t('Buang tapisan: ', 'Remove filter: ') + b.textContent.replace(' ✕', ''));
   b.onclick = () => clearKey(k);
   return b;
+}
+
+// Example searches under the box; each shows a different thing the filters can't do. They work on the
+// local and public (fictional names) copies alike.
+const EXAMPLES = [
+  ['masih dalam proses lebih 2 minggu', 'pending more than 2 weeks'],
+  ['majlis belia bukan lulus', 'majlis belia not approved'],
+  ['kelab atau persatuan yang lulus', 'kelab or persatuan approved'],
+  ['majlis bela lulus', 'majlis bela approved'],
+];
+function renderExamples() {
+  const box = document.getElementById('examples');
+  box.replaceChildren(el('span', { className: 'examples-label', textContent: t('Cuba:', 'Try:') }));
+  EXAMPLES.forEach(ex => {
+    const b = el('button', { type: 'button', className: 'example-chip', textContent: t(...ex) });
+    b.onclick = () => { document.getElementById('q').value = t(...ex); document.getElementById('qs').requestSubmit(); };
+    box.append(b);
+  });
 }
 
 function render() {
@@ -181,8 +200,9 @@ rows.onclick = e => {
 };
 f.onsubmit = e => { e.preventDefault(); state = { ...state, ...Object.fromEntries(new FormData(f)) }; render(); };
 f.onreset = () => setTimeout(() => setState({}));
+renderExamples();
 render();
-document.addEventListener('langchange', render);
+document.addEventListener('langchange', () => { renderExamples(); render(); });
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
