@@ -99,6 +99,7 @@ html:not(.lang-en-on) #lang-toggle .lang-ms, html.lang-en-on #lang-toggle .lang-
 
 /* Public demo mode */
 .demo-bar { background: #b02a2a; color: #fff; text-align: center; padding: 8px 12px; font-size: 13px; position: sticky; top: 0; z-index: 1100; }
+.demo-ai { margin-left: 10px; opacity: .85; } .demo-ai.on { opacity: 1; }
 .banner span { font-size: 30px; max-width: 92%; text-align: center; }
 .banner span::before { content: "PROTOTAIP · "; color: #b02a2a; }
 @media (max-width: 767px) { .banner span { font-size: 17px; } }
