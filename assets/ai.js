@@ -137,18 +137,6 @@
     };
   }
 
-  // Form helper: send the sign-up form (never passwords or captcha) for AI review.
-  const form = page === 'daftar' && document.querySelector('form.form-horizontal');
-  if (form) {
-    form.querySelector('.btn-primary').insertAdjacentHTML('afterend', ' <button type="button" id="ai-check" class="btn btn-warning"><span class="glyphicon glyphicon-check"></span> Semak dengan AI</button>');
-    $('ai-check').onclick = () => {
-      const fields = [...form.querySelectorAll('input:not([type=password]):not([type=checkbox]):not(#code)')]
-        .map(i => `${form.querySelector(`label[for=${i.id}]`).textContent.replace(/[:*]/g, '').trim()}: ${i.value || '(kosong)'}`);
-      ask('Tolong semak borang Daftar Pengguna saya:\n' + fields.join('\n') +
-        '\n(Katalaluan dan Kod Pengesahan sengaja tidak dihantar atas sebab keselamatan; jangan ulas medan itu.)', 'Semak borang saya 📝');
-    };
-  }
-
   // Natural-language search on the carian page.
   const f = page === 'carian' && document.getElementById('f');
   if (f) {

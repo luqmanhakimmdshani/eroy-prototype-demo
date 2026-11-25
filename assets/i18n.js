@@ -11,19 +11,7 @@
     'Sistem Pendaftaran Pertubuhan Belia': 'Youth Organisation Registration System',
     'Pejabat Pendaftar Pertubuhan Belia.': 'Registrar of Youth Organisations Office.', '(Prototaip tempatan)': '(Local prototype)',
     'Prototaip sahaja — tiada data dihantar.': 'Prototype only — no data was sent.', 'Senarai': 'List',
-    // home: wizard, checklist, manual, login
-    'Daftarkan pertubuhan belia anda secara atas talian dalam 5 langkah:': 'Register your youth organisation online in 5 steps:',
-    'Daftar Akaun': 'Create Account', 'Sahkan Emel': 'Verify Email', 'Isi Permohonan': 'Fill In Application',
-    'Pengesahan Pengerusi': 'Chairperson Confirmation', 'Bayaran & Kelulusan': 'Payment & Approval',
-    '« Kembali': '« Back', 'Seterusnya »': 'Next »', 'Sediakan sebelum mula': 'Prepare before you start',
-    'Sekurang-kurangnya 7 orang ahli jawatankuasa penaja': 'At least 7 sponsor committee members',
-    'Pemegang jawatan berumur 18 hingga 30 tahun': 'Office holders aged 18 to 30',
-    'Minit Mesyuarat Penubuhan (PDF, ditandatangani)': 'Founding meeting minutes (PDF, signed)',
-    'Senarai Kehadiran mesyuarat (PDF)': 'Meeting attendance list (PDF)',
-    'Perlembagaan yang telah ditandatangani (PDF)': 'Signed constitution (PDF)',
-    'Salinan KP Pengerusi, Setiausaha dan Bendahari': 'IC copies of Chairperson, Secretary and Treasurer',
-    'Emel dan No. telefon yang aktif': 'Active email and phone number',
-    'Sumber: Manual Pengguna eROY, Bab 5.': 'Source: eROY User Manual, Chapter 5.',
+    // home, login
     'Manual Pengguna': 'User Manual', 'Buka Manual': 'Open Manual',
     'Rujuk manual pengguna untuk panduan penggunaan Sistem Pendaftaran Pertubuhan Belia.': 'See the user manual for a guide to using the Youth Organisation Registration System.',
     'No Kad Pengenalan :': 'IC Number :', 'Katalaluan :': 'Password :', 'No Kad Pengenalan': 'IC Number', 'Katalaluan': 'Password',
@@ -32,7 +20,7 @@
     'DAFTAR PENGGUNA SISTEM': 'SYSTEM USER REGISTRATION', 'PERHATIAN': 'ATTENTION',
     'No.Kad Pengenalan:*': 'IC Number:*', 'Nama Penuh:*': 'Full Name:*', 'Alamat Emel:*': 'Email Address:*',
     'No.Telefon Bimbit:*': 'Mobile Number:*', 'Katalaluan:*': 'Password:*', 'Sahkan Katalaluan:*': 'Confirm Password:*',
-    'Kod Pengesahan:*': 'Verification Code:*', 'Daftar': 'Register', 'Kembali': 'Back', 'Semak dengan AI': 'Check with AI',
+    'Kod Pengesahan:*': 'Verification Code:*', 'Daftar': 'Register', 'Kembali': 'Back',
     'Contoh: 900101011234': 'Example: 900101011234',
     // forgot password
     'Masukkan No. Kad Pengenalan yang didaftarkan. Pautan untuk menetapkan semula katalaluan akan dihantar ke alamat emel anda.':

@@ -144,15 +144,6 @@ function render() {
     li.append(head, sel, how, checks);
     list.append(li);
   }
-
-  // Tick (never untick) home-page checklist items whose documents are all ready.
-  try {
-    const ck = JSON.parse(localStorage.getItem('eroy-checklist')) || [];
-    for (const idx of new Set(required.map(s => s.checklist))) {
-      if (required.filter(s => s.checklist === idx).every(s => files.some(f => f.slot === s.id && check(f).ok))) ck[idx] = true;
-    }
-    localStorage.setItem('eroy-checklist', JSON.stringify(ck));
-  } catch {}
 }
 
 const input = document.getElementById('doc-input'), drop = document.getElementById('drop');

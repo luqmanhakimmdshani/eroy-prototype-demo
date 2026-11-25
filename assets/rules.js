@@ -53,12 +53,12 @@ function checkEligibility(a) {
 const MB = 1024 * 1024;
 const fmtSize = b => b < 0.1 * MB ? `${Math.max(1, Math.round(b / 1024))}KB` : `${(b / MB).toFixed(1)}MB`;
 const DOC_SLOTS = [
-  { id: 'minit', ms: 'Minit Mesyuarat Penubuhan', en: 'Founding meeting minutes', types: ['pdf'], required: true, checklist: 2 },
-  { id: 'kehadiran', ms: 'Senarai Kehadiran mesyuarat', en: 'Meeting attendance list', types: ['pdf'], required: true, checklist: 3 },
-  { id: 'perlembagaan', ms: 'Perlembagaan (ditandatangani)', en: 'Constitution (signed)', types: ['pdf'], required: true, checklist: 4 },
-  { id: 'kp_pengerusi', ms: 'Salinan KP Pengerusi', en: 'Chairperson IC copy', types: ['pdf', 'jpg', 'png'], required: true, checklist: 5 },
-  { id: 'kp_setiausaha', ms: 'Salinan KP Setiausaha', en: 'Secretary IC copy', types: ['pdf', 'jpg', 'png'], required: true, checklist: 5 },
-  { id: 'kp_bendahari', ms: 'Salinan KP Bendahari', en: 'Treasurer IC copy', types: ['pdf', 'jpg', 'png'], required: true, checklist: 5 },
+  { id: 'minit', ms: 'Minit Mesyuarat Penubuhan', en: 'Founding meeting minutes', types: ['pdf'], required: true },
+  { id: 'kehadiran', ms: 'Senarai Kehadiran mesyuarat', en: 'Meeting attendance list', types: ['pdf'], required: true },
+  { id: 'perlembagaan', ms: 'Perlembagaan (ditandatangani)', en: 'Constitution (signed)', types: ['pdf'], required: true },
+  { id: 'kp_pengerusi', ms: 'Salinan KP Pengerusi', en: 'Chairperson IC copy', types: ['pdf', 'jpg', 'png'], required: true },
+  { id: 'kp_setiausaha', ms: 'Salinan KP Setiausaha', en: 'Secretary IC copy', types: ['pdf', 'jpg', 'png'], required: true },
+  { id: 'kp_bendahari', ms: 'Salinan KP Bendahari', en: 'Treasurer IC copy', types: ['pdf', 'jpg', 'png'], required: true },
   { id: 'logo', ms: 'Logo Pertubuhan (pilihan)', en: 'Organisation logo (optional)', types: ['jpg', 'png'], required: false },
 ];
 const MAGIC = { pdf: [0x25, 0x50, 0x44, 0x46], png: [0x89, 0x50, 0x4e, 0x47], jpg: [0xff, 0xd8, 0xff] };
