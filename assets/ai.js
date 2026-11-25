@@ -1,5 +1,5 @@
 // AI features: chat assistant with manual sources, feedback and voice (all pages),
-// natural-language search (carian), form helper (daftar). Other pages call window.eroyAsk(question).
+// Other pages call window.eroyAsk(question); the search page calls /api/search itself.
 (() => {
   const page = (location.pathname.split('/').pop().replace('.html', '') || 'index');
   const lang = () => document.documentElement.lang === 'en' ? 'en' : 'ms';  // set by i18n.js
@@ -137,32 +137,4 @@
     };
   }
 
-  // Natural-language search on the carian page.
-  const f = page === 'carian' && document.getElementById('f');
-  if (f) {
-    f.insertAdjacentHTML('beforebegin', `
-      <form id="ai-search" class="ai-search" data-live="1">
-        <label for="ai-sq"><span class="glyphicon glyphicon-flash"></span> Carian pintar (AI)</label>
-        <div class="input-group">
-          <input id="ai-sq" class="form-control" placeholder="Contoh: majlis belia peringkat negeri yang sudah lulus" maxlength="500">
-          <span class="input-group-btn"><button class="btn btn-warning">Cari dengan AI</button></span>
-        </div>
-        <p id="ai-sexp" class="help-block"></p>
-      </form>`);
-    $('ai-search').onsubmit = async e => {
-      e.preventDefault();
-      const btn = e.target.querySelector('button'), exp = $('ai-sexp');
-      btn.disabled = true; exp.textContent = 'Memproses…';
-      try {
-        const r = await fetch('/api/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q: $('ai-sq').value }) });
-        const j = await r.json();
-        if (!r.ok) throw new Error(j.error);
-        f.reset();
-        f.no.value = j.no; f.nama.value = j.nama; f.status.value = j.status || ''; f.peringkat.value = j.peringkat || '';
-        f.requestSubmit();
-        exp.textContent = '✓ ' + j.penerangan;
-      } catch (err) { exp.textContent = 'Ralat: ' + err.message; }
-      btn.disabled = false;
-    };
-  }
 })();

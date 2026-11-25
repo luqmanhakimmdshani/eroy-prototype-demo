@@ -13,61 +13,149 @@
   <div class="panel panel-default">
     <div class="panel-heading">Senarai Carian Pertubuhan</div>
     <div class="panel-body">
-      <form id="f" class="form-horizontal" data-live="1">
-        <div class="form-group">
-          <label class="col-sm-2 control-label">No. Pendaftaran Pertubuhan :</label><div class="col-sm-4"><input name="no" class="form-control"></div>
-          <label class="col-sm-2 control-label">Nama Pertubuhan :</label><div class="col-sm-4"><input name="nama" class="form-control"></div>
+      <!-- One search box: number, name or a plain description -->
+      <form id="qs" class="one-search" data-live="1" role="search">
+        <label class="sr-only" for="q">Cari pertubuhan</label>
+        <div class="input-group">
+          <input id="q" class="form-control input-lg" maxlength="300" autocomplete="off"
+                 placeholder="Cari nama, No. Pendaftaran atau terangkan — cth: majlis belia negeri yang lulus">
+          <span class="input-group-btn"><button class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-search"></span> Cari</button></span>
         </div>
-        <div class="form-group">
-          <label class="col-sm-2 control-label">Jenis Pertubuhan :</label>
-          <div class="col-sm-4"><select name="jenis" class="form-control"><option value="">Sila pilih</option><option>Tunggal</option></select></div>
-          <label class="col-sm-2 control-label">Status Pendaftaran :</label>
-          <div class="col-sm-4"><select name="status" class="form-control"><option value="">Sila pilih</option>
-            <option>Dalam Proses Semakan</option><option>Kuiri Pendaftaran</option><option>Menunggu Pembayaran</option><option>Tolak</option>
-            <option>Lulus</option><option>Kelulusan Bersyarat</option><option>Dibenarkan Menubuhkan Cawangan</option></select></div>
-        </div>
-        <div class="form-group">
-          <label class="col-sm-2 control-label">Peringkat Pertubuhan :</label>
-          <div class="col-sm-4"><select name="peringkat" class="form-control"><option value="">Sila pilih</option>
-            <option>Kebangsaan</option><option>Negeri</option><option>Daerah</option><option>Bahagian</option><option>Kawasan</option><option>Lokaliti</option></select></div>
-        </div>
-        <div class="text-center"><button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Cari</button> <button type="reset" class="btn btn-default">Set Semula</button></div>
       </form>
-      <hr>
+      <div class="filter-chips" id="chips" aria-live="polite"></div>
+      <p class="search-note" id="search-note" aria-live="polite"></p>
+
+      <details class="adv-filters" id="adv">
+        <summary>Tapis lanjut</summary>
+        <form id="f" class="form-horizontal" data-live="1">
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="f-no">No. Pendaftaran Pertubuhan :</label><div class="col-sm-4"><input id="f-no" name="no" class="form-control"></div>
+            <label class="col-sm-2 control-label" for="f-nama">Nama Pertubuhan :</label><div class="col-sm-4"><input id="f-nama" name="nama" class="form-control"></div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="f-jenis">Jenis Pertubuhan :</label>
+            <div class="col-sm-4"><select id="f-jenis" name="jenis" class="form-control"><option value="">Sila pilih</option><option>Tunggal</option></select></div>
+            <label class="col-sm-2 control-label" for="f-status">Status Pendaftaran :</label>
+            <div class="col-sm-4"><select id="f-status" name="status" class="form-control"><option value="">Sila pilih</option>
+              <option>Dalam Proses Semakan</option><option>Kuiri Pendaftaran</option><option>Menunggu Pembayaran</option><option>Tolak</option>
+              <option>Lulus</option><option>Kelulusan Bersyarat</option><option>Dibenarkan Menubuhkan Cawangan</option></select></div>
+          </div>
+          <div class="form-group">
+            <label class="col-sm-2 control-label" for="f-peringkat">Peringkat Pertubuhan :</label>
+            <div class="col-sm-4"><select id="f-peringkat" name="peringkat" class="form-control"><option value="">Sila pilih</option>
+              <option>Kebangsaan</option><option>Negeri</option><option>Daerah</option><option>Bahagian</option><option>Kawasan</option><option>Lokaliti</option></select></div>
+          </div>
+          <div class="text-center"><button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Cari</button> <button type="reset" class="btn btn-default">Set Semula</button></div>
+        </form>
+      </details>
+
       <div class="table-responsive">
         <table class="table table-bordered table-striped table-condensed">
           <thead><tr><th>#</th><th>No. Pendaftaran Pertubuhan</th><th>Nama Pertubuhan</th><th>Jenis Pertubuhan</th><th>Peringkat Pertubuhan</th><th>Status Pendaftaran</th></tr></thead>
           <tbody id="rows"></tbody>
         </table>
       </div>
+      <div id="empty-help" aria-live="polite"></div>
     </div>
   </div>
   <footer id="footer"></footer>
 </div>
 <script src="assets/data.js"></script>
+<script src="assets/search.js"></script>
 <script>
 // ponytail: client-side filter over mock data; swap for a real API call when there's a backend.
-function render() {
-  const q = Object.fromEntries(new FormData(f));
-  const hit = PERTUBUHAN.filter(p =>
-    p.no.toLowerCase().includes(q.no.toLowerCase()) &&
-    p.nama.toLowerCase().includes(q.nama.toLowerCase()) &&
-    (!q.jenis || p.jenis === q.jenis) && (!q.status || p.status === q.status) && (!q.peringkat || p.peringkat === q.peringkat));
-  rows.innerHTML = hit.length ? hit.map((p, i) =>
-    `<tr><td>${i + 1}.</td><td><a href="semak.html?no=${p.no}" title="Semak status">${p.no}</a></td><td>${p.nama}</td><td>${p.jenis}</td><td>${p.peringkat}</td>` +
-    `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span></button></td></tr>`).join('')
-    : '<tr><td colspan="6" class="text-center">Tiada rekod dijumpai.</td></tr>';
+const en = () => document.documentElement.lang === 'en';
+const t = (ms, e) => (en() ? e : ms);
+const el = (tag, props) => Object.assign(document.createElement(tag), props);
+const LABELS = { no: ['No.', 'No.'], nama: ['Nama', 'Name'], jenis: ['Jenis', 'Type'], status: ['Status', 'Status'], peringkat: ['Peringkat', 'Level'] };
+const KEYS = Object.keys(LABELS);
+const f = document.getElementById('f'), note = document.getElementById('search-note');
+const filters = () => Object.fromEntries(new FormData(f));
+const setFilters = v => KEYS.forEach(k => { f.elements[k].value = v[k] || ''; });
+const clearField = k => { f.elements[k].value = ''; render(); };
+
+function chip(k, v) {
+  const b = el('button', { type: 'button', className: 'filter-chip' });
+  b.setAttribute('aria-label', t(`Buang tapisan ${LABELS[k][0]}: ${v}`, `Remove filter ${LABELS[k][1]}: ${v}`));
+  b.append(t(...LABELS[k]) + ': ', el('span', { textContent: v }), el('span', { className: 'chip-x', textContent: ' ✕', ariaHidden: 'true' }));
+  b.onclick = () => clearField(k);
+  return b;
 }
+
+function render() {
+  const q = filters(), hits = applyFilters(PERTUBUHAN, q), active = KEYS.filter(k => q[k]);
+
+  // What the search is using, as removable tags.
+  const chips = document.getElementById('chips');
+  chips.replaceChildren(...active.map(k => chip(k, q[k])));
+  if (active.length > 1) {
+    const all = el('button', { type: 'button', className: 'btn btn-link btn-xs', textContent: t('Kosongkan semua', 'Clear all') });
+    all.onclick = () => { setFilters({}); document.getElementById('q').value = ''; note.textContent = ''; render(); };
+    chips.append(all);
+  }
+  if (active.length) chips.prepend(el('span', { className: 'chips-count', textContent: t(`${hits.length} hasil · `, `${hits.length} result${hits.length === 1 ? '' : 's'} · `) }));
+
+  rows.innerHTML = hits.map((p, i) =>
+    `<tr><td>${i + 1}.</td><td><a href="semak.html?no=${p.no}" title="Semak status">${p.no}</a></td><td>${p.nama}</td><td>${p.jenis}</td><td>${p.peringkat}</td>` +
+    `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span></button></td></tr>`).join('');
+
+  // No results: say which filter to drop, and how many results that would give.
+  const help = document.getElementById('empty-help');
+  help.replaceChildren();
+  if (!hits.length) {
+    const box = el('div', { className: 'empty-help' });
+    box.append(el('b', { textContent: t('Tiada pertubuhan sepadan dengan semua tapisan.', 'No organisation matches all the filters.') }));
+    const rel = relaxations(PERTUBUHAN, q);
+    if (rel.length) {
+      box.append(el('span', { textContent: t(' Cuba:', ' Try:') }));
+      rel.forEach(r => {
+        const b = el('button', { type: 'button', className: 'btn btn-default btn-sm' });
+        b.append(t('tanpa ', 'without '), el('span', { textContent: q[r.drop] }), t(` (${r.count} hasil)`, ` (${r.count} result${r.count === 1 ? '' : 's'})`));
+        b.onclick = () => clearField(r.drop);
+        box.append(' ', b);
+      });
+    }
+    help.append(box);
+  }
+}
+
+// One box: understand locally first; only unclear words go to the AI.
+document.getElementById('qs').onsubmit = async e => {
+  e.preventDefault();
+  const text = document.getElementById('q').value.trim(), btn = e.target.querySelector('button');
+  note.textContent = '';
+  if (!text) { setFilters({}); return render(); }
+  const parsed = parseQuery(text, PERTUBUHAN);
+  if (!parsed.needsAI) { setFilters(parsed.filters); return render(); }
+  btn.disabled = true;
+  note.textContent = t('Memahami carian anda dengan AI…', 'Understanding your search with AI…');
+  try {
+    const r = await fetch('/api/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q: text }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error);
+    setFilters(j);
+    // The tags show exactly what was applied; the model's own summary can claim filters it didn't set.
+    note.textContent = t('✓ Difahami dengan bantuan AI — semak tapisan di atas.', '✓ Understood with AI — check the filters above.');
+  } catch {
+    // AI unavailable: keep what we understood and search the remaining words as a name.
+    setFilters({ ...parsed.filters, nama: parsed.leftover.toUpperCase() });
+    note.textContent = t('AI tidak tersedia — carian menggunakan kata kunci sahaja.', 'AI unavailable — searched by keywords only.');
+  }
+  btn.disabled = false;
+  render();
+};
+
 // Status explainer: clicking a status asks the assistant what it means and what to do next.
 rows.onclick = e => {
   const b = e.target.closest('.status-ai');
-  if (b) window.eroyAsk(document.documentElement.lang === 'en'
+  if (b) window.eroyAsk(en()
     ? `What does the status "${b.dataset.status}" mean and what should the applicant do next?`
     : `Apakah maksud status "${b.dataset.status}" dan apa yang perlu dilakukan oleh pemohon seterusnya?`);
 };
 f.onsubmit = e => { e.preventDefault(); render(); };
 f.onreset = () => setTimeout(render);
 render();
+document.addEventListener('langchange', render);
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>

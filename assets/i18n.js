@@ -33,9 +33,10 @@
     'Sila pilih': 'Please select', 'Cari': 'Search', 'Set Semula': 'Reset', 'Tiada rekod dijumpai.': 'No records found.',
     'No. Pendaftaran Pertubuhan': 'Registration No.', 'Nama Pertubuhan': 'Organisation Name', 'Jenis Pertubuhan': 'Type',
     'Peringkat Pertubuhan': 'Level', 'Status Pendaftaran': 'Status',
-    'Carian pintar (AI)': 'Smart search (AI)', 'Cari dengan AI': 'Search with AI', 'Memproses…': 'Processing…',
-    'Contoh: majlis belia peringkat negeri yang sudah lulus': 'Example: state-level youth councils that were approved',
     'Terangkan dengan AI': 'Explain with AI', 'Semak status': 'Check status',
+    'Cari pertubuhan': 'Search organisations', 'Tapis lanjut': 'Advanced filters',
+    'Cari nama, No. Pendaftaran atau terangkan — cth: majlis belia negeri yang lulus':
+      'Search a name, registration number or describe it — e.g. approved state youth councils',
     // levels, types, statuses
     'Tunggal': 'Single', 'Kebangsaan': 'National', 'Negeri': 'State', 'Daerah': 'District', 'Bahagian': 'Division',
     'Kawasan': 'Area', 'Lokaliti': 'Locality',
