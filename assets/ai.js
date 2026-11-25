@@ -10,7 +10,7 @@
   const post = (url, body) => fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
 
   document.body.insertAdjacentHTML('beforeend', `
-    <button id="ai-fab" class="btn btn-warning" aria-label="Buka Pembantu eROY"><span class="glyphicon glyphicon-comment"></span> Tanya AI <span class="ai-tag">AI</span></button>
+    <button id="ai-fab" class="btn btn-warning" aria-label="Buka Pembantu eROY"><span class="glyphicon glyphicon-comment"></span> Pembantu eROY <span class="ai-tag">AI</span></button>
     <section id="ai-panel" class="panel panel-default" hidden aria-label="Pembantu eROY">
       <div class="panel-heading" id="ai-head"><b>Pembantu eROY</b> <span class="ai-tag">AI</span>
         <button type="button" class="close" id="ai-close" aria-label="Tutup" title="Tutup">&times;</button>
