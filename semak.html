@@ -20,8 +20,7 @@
         <datalist id="track-list"></datalist>
         <button class="btn btn-primary"><span class="glyphicon glyphicon-search"></span> Semak</button>
       </form>
-      <p class="small track-quick"><span id="recent-label" hidden>Baru disemak:</span> <span id="recent"></span>
-        <span>Cuba contoh:</span> <span id="samples"></span></p>
+      <p class="small track-quick"><span>Cuba contoh:</span> <span id="samples"></span></p>
       <div id="result" aria-live="polite"></div>
     </div>
   </div>
@@ -96,7 +95,6 @@ function show(p) {
   current = p;
   input.value = p.no;
   history.replaceState(null, '', '?no=' + encodeURIComponent(p.no));
-  remember(p.no);
   const steps = timeline(p), cur = steps.filter(s => s.date).pop();
   const days = Math.round((Date.now() - cur.date.getTime()) / 86400000);
   const final = FINAL.includes(p.status);
@@ -152,21 +150,6 @@ function show(p) {
   result.replaceChildren(head, row);
 }
 
-// Recently checked applications (this browser only).
-function remember(no) {
-  let list = [];
-  try { list = JSON.parse(localStorage.getItem('eroy-recent')) || []; } catch {}
-  list = [no, ...list.filter(x => x !== no)].slice(0, 4);
-  try { localStorage.setItem('eroy-recent', JSON.stringify(list)); } catch {}
-  renderRecent(list);
-}
-function renderRecent(list) {
-  if (!list) { try { list = JSON.parse(localStorage.getItem('eroy-recent')) || []; } catch { list = []; } }
-  const box = document.getElementById('recent');
-  box.replaceChildren(...list.map(no => { const a = el('a', { href: '?no=' + no, textContent: no }); a.onclick = e => { e.preventDefault(); lookup(no); }; return a; }));
-  document.getElementById('recent-label').hidden = !list.length;
-}
-
 PERTUBUHAN.forEach(p => document.getElementById('track-list').append(new Option(p.nama, p.no)));
 ['PPPM-01003', 'PPPM-01004', 'PPPM-01009', 'PPPM-01012'].forEach(no => {
   const a = el('a', { href: '?no=' + no, textContent: no });
@@ -174,7 +157,6 @@ PERTUBUHAN.forEach(p => document.getElementById('track-list').append(new Option(
   document.getElementById('samples').append(a);
 });
 document.getElementById('tf').onsubmit = e => { e.preventDefault(); lookup(input.value); };
-renderRecent();
 const q = new URLSearchParams(location.search).get('no');
 if (q) lookup(q);
 document.addEventListener('langchange', () => current && show(current));

@@ -108,7 +108,6 @@ html:not(.lang-en-on) #lang-toggle .lang-ms, html.lang-en-on #lang-toggle .lang-
 .track-search .form-control { flex: 1; }
 .track-quick { text-align: center; margin: 10px 0 18px; color: #666; }
 .track-quick a { margin: 0 6px 0 2px; }
-#recent-label + #recent { margin-right: 14px; }
 .track-head { border-top: 1px solid #eee; padding-top: 16px; }
 .track-head h4 { margin: 0 0 6px; font-weight: bold; }
 .track-meta { color: #555; }

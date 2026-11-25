@@ -51,7 +51,7 @@
       'Find an application by registration number or organisation name. No login needed.',
     'Contoh: PPPM-01003 atau nama pertubuhan': 'Example: PPPM-01003 or organisation name',
     'No. Pendaftaran atau nama pertubuhan': 'Registration number or organisation name',
-    'Semak': 'Check', 'Cuba contoh:': 'Try an example:', 'Baru disemak:': 'Recently checked:',
+    'Semak': 'Check', 'Cuba contoh:': 'Try an example:',
     'Permohonan Dihantar (Setiausaha)': 'Application Submitted (Secretary)', 'Keputusan': 'Decision',
     'Pengesahan Pengerusi': 'Chairperson Confirmation',
     // AI widget
