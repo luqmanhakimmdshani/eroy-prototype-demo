@@ -22,6 +22,7 @@
           <span class="input-group-btn"><button class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-search"></span> Cari</button></span>
         </div>
       </form>
+      <p class="ai-hint"><span class="ai-tag ai-part">Sebahagian AI</span> <span data-en="Most searches are understood right in your browser; only unclear words are sent to the AI.">Kebanyakan carian difahami terus dalam pelayar; hanya perkataan yang kurang jelas dihantar ke AI.</span></p>
       <div class="search-examples" id="examples"></div>
       <div class="filter-chips" id="chips" aria-live="polite"></div>
       <p class="search-note" id="search-note" aria-live="polite"></p>
@@ -142,7 +143,7 @@ function render() {
   rows.innerHTML = hits.map((p, i) => {
     const days = PENDING.includes(p.status) ? ` <small class="text-muted">· ${daysAtStage(p)} ${t('hari', 'days')}</small>` : '';
     return `<tr><td>${i + 1}.</td><td><a href="semak.html?no=${p.no}" title="Semak status">${p.no}</a></td><td>${p.nama}</td><td>${p.jenis}</td><td>${p.peringkat}</td>` +
-      `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span></button>${days}</td></tr>`;
+      `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span> <span class="ai-tag">AI</span></button>${days}</td></tr>`;
   }).join('');
 
   // No results: say which filter to drop, and how many results that would give.

@@ -130,7 +130,8 @@ function show(p) {
     act.append(src);
   }
   const ask = el('button', { type: 'button', className: 'btn btn-warning btn-sm', innerHTML: '<span class="glyphicon glyphicon-comment"></span> ' });
-  ask.append(t('Tanya AI tentang status ini', 'Ask AI about this status'));
+  ask.append(t('Tanya AI tentang status ini', 'Ask AI about this status'), ' ');
+  ask.insertAdjacentHTML('beforeend', '<span class="ai-tag">AI</span>');
   ask.onclick = () => window.eroyAsk(t(
     `Permohonan pertubuhan saya (${p.nama}) kini di peringkat "${p.status}" sejak ${days} hari. Apa maksudnya dan apa yang perlu saya buat seterusnya?`,
     `My organisation's application (${p.nama}) has been at the "${p.status}" stage for ${days} days. What does that mean and what should I do next?`));

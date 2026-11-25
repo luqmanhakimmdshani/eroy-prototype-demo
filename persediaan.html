@@ -112,7 +112,8 @@ function renderElig() {
   if (elig.eligible) {
     actions.append(el('a', { className: 'btn btn-default', href: '#step-docs', textContent: t('Seterusnya: semak dokumen ↓', 'Next: check your documents ↓') }));
   } else {
-    const ask = el('button', { type: 'button', className: 'btn btn-warning', textContent: t('Tanya AI apa perlu dibuat', 'Ask AI what to do') });
+    const ask = el('button', { type: 'button', className: 'btn btn-warning', textContent: t('Tanya AI apa perlu dibuat', 'Ask AI what to do') + ' ' });
+    ask.insertAdjacentHTML('beforeend', '<span class="ai-tag">AI</span>');
     ask.onclick = () => window.eroyAsk(t('Saya belum layak mendaftar pertubuhan belia kerana: ', 'I am not yet eligible to register a youth organisation because: ')
       + elig.results.filter(r => r.ok === false).map(r => t(r.ms, r.en)).join(' ') + t(' Apa yang boleh saya lakukan?', ' What can I do?'));
     actions.append(ask);

@@ -55,7 +55,7 @@
     'Permohonan Dihantar (Setiausaha)': 'Application Submitted (Secretary)', 'Keputusan': 'Decision',
     'Pengesahan Pengerusi': 'Chairperson Confirmation',
     // AI widget
-    'Tanya AI': 'Ask AI', 'Pembantu eROY': 'eROY Assistant', 'Tanya tentang pendaftaran...': 'Ask about registration...',
+    'Tanya AI': 'Ask AI', 'Sebahagian AI': 'Partly AI', 'Pembantu eROY': 'eROY Assistant', 'Tanya tentang pendaftaran...': 'Ask about registration...',
     'Jawapan AI mungkin tidak tepat. Jangan kongsi katalaluan.': 'AI answers may be inaccurate. Never share your password.',
     'Bagaimana nak daftar pertubuhan?': 'How do I register an organisation?', 'Siapa boleh buat permohonan?': 'Who can apply?',
     'Buka Pembantu eROY': 'Open eROY Assistant', 'Tutup': 'Close', 'Kecilkan': 'Minimise', 'Cakap': 'Speak',
