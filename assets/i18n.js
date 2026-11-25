@@ -35,8 +35,8 @@
     'Peringkat Pertubuhan': 'Level', 'Status Pendaftaran': 'Status',
     'Terangkan dengan AI': 'Explain with AI', 'Semak status': 'Check status',
     'Cari pertubuhan': 'Search organisations', 'Tapis lanjut': 'Advanced filters',
-    'Cari nama, No. Pendaftaran atau terangkan — cth: majlis belia negeri yang lulus':
-      'Search a name, registration number or describe it — e.g. approved state youth councils',
+    'Cth: majlis belia bukan lulus · Johor atau Kedah · masih dalam proses lebih 2 minggu':
+      'E.g. youth councils not approved · Johor or Kedah · pending more than 2 weeks',
     // levels, types, statuses
     'Tunggal': 'Single', 'Kebangsaan': 'National', 'Negeri': 'State', 'Daerah': 'District', 'Bahagian': 'Division',
     'Kawasan': 'Area', 'Lokaliti': 'Locality',

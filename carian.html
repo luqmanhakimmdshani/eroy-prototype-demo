@@ -18,12 +18,13 @@
         <label class="sr-only" for="q">Cari pertubuhan</label>
         <div class="input-group">
           <input id="q" class="form-control input-lg" maxlength="300" autocomplete="off"
-                 placeholder="Cari nama, No. Pendaftaran atau terangkan — cth: majlis belia negeri yang lulus">
+                 placeholder="Cth: majlis belia bukan lulus · Johor atau Kedah · masih dalam proses lebih 2 minggu">
           <span class="input-group-btn"><button class="btn btn-primary btn-lg"><span class="glyphicon glyphicon-search"></span> Cari</button></span>
         </div>
       </form>
       <div class="filter-chips" id="chips" aria-live="polite"></div>
       <p class="search-note" id="search-note" aria-live="polite"></p>
+      <p class="search-note" id="fuzzy-note" aria-live="polite"></p>
 
       <details class="adv-filters" id="adv">
         <summary>Tapis lanjut</summary>
@@ -67,37 +68,63 @@
 const en = () => document.documentElement.lang === 'en';
 const t = (ms, e) => (en() ? e : ms);
 const el = (tag, props) => Object.assign(document.createElement(tag), props);
-const LABELS = { no: ['No.', 'No.'], nama: ['Nama', 'Name'], jenis: ['Jenis', 'Type'], status: ['Status', 'Status'], peringkat: ['Peringkat', 'Level'] };
-const KEYS = Object.keys(LABELS);
+const SIMPLE = ['no', 'nama', 'jenis', 'status', 'peringkat'];  // the fields the advanced form can hold
 const f = document.getElementById('f'), note = document.getElementById('search-note');
-const filters = () => Object.fromEntries(new FormData(f));
-const setFilters = v => KEYS.forEach(k => { f.elements[k].value = v[k] || ''; });
-const clearField = k => { f.elements[k].value = ''; render(); };
+let state = emptyFilters();  // the one source of truth; the advanced form mirrors its simple fields
+const syncForm = () => SIMPLE.forEach(k => { f.elements[k].value = state[k] || ''; });
+const setState = v => { state = { ...emptyFilters(), ...v }; syncForm(); render(); };
+const clearKey = k => { state = cleared(state, k); syncForm(); render(); };
+const sameList = (a, b) => a.length === b.length && a.every(x => b.includes(x));
 
-function chip(k, v) {
+// Tag text for each kind of filter. Status names sit in their own <span> so the BM/EN switch can translate them.
+function tagParts(k, v) {
+  const spans = list => list.flatMap((x, i) => [i ? ', ' : '', el('span', { textContent: x })]);
+  switch (k) {
+    case 'no': return ['No.: ', v];
+    case 'nama': return [t('Nama: ', 'Name: '), v];
+    case 'namaAny': return [t('Nama: ', 'Name: '), v.join(t(' atau ', ' or '))];
+    case 'jenis': return [t('Jenis: ', 'Type: '), el('span', { textContent: v })];
+    case 'status': return ['Status: ', el('span', { textContent: v })];
+    case 'statusIn': return ['Status: ', state.statusInLabel ? t(...state.statusInLabel) : spans(v)].flat();
+    case 'statusNot': return [t('Bukan: ', 'Not: '), sameList(v, PENDING) ? t('masih dalam proses', 'still in progress')
+                                                     : sameList(v, DECIDED) ? t('sudah ada keputusan', 'decided') : spans(v)].flat();
+    case 'peringkat': return [t('Peringkat: ', 'Level: '), el('span', { textContent: v })];
+    case 'minDays': return [t(`Lebih ${v} hari di peringkat semasa`, `More than ${v} days at the current stage`)];
+  }
+}
+const KEYS = ['no', 'nama', 'namaAny', 'jenis', 'status', 'statusIn', 'statusNot', 'peringkat', 'minDays'];
+
+function chip(k) {
   const b = el('button', { type: 'button', className: 'filter-chip' });
-  b.setAttribute('aria-label', t(`Buang tapisan ${LABELS[k][0]}: ${v}`, `Remove filter ${LABELS[k][1]}: ${v}`));
-  b.append(t(...LABELS[k]) + ': ', el('span', { textContent: v }), el('span', { className: 'chip-x', textContent: ' ✕', ariaHidden: 'true' }));
-  b.onclick = () => clearField(k);
+  b.append(...tagParts(k, state[k]), el('span', { className: 'chip-x', textContent: ' ✕', ariaHidden: 'true' }));
+  b.setAttribute('aria-label', t('Buang tapisan: ', 'Remove filter: ') + b.textContent.replace(' ✕', ''));
+  b.onclick = () => clearKey(k);
   return b;
 }
 
 function render() {
-  const q = filters(), hits = applyFilters(PERTUBUHAN, q), active = KEYS.filter(k => q[k]);
+  const hits = applyFilters(PERTUBUHAN, state), active = KEYS.filter(k => isActive(state, k));
 
   // What the search is using, as removable tags.
   const chips = document.getElementById('chips');
-  chips.replaceChildren(...active.map(k => chip(k, q[k])));
+  chips.replaceChildren(...active.map(chip));
   if (active.length > 1) {
     const all = el('button', { type: 'button', className: 'btn btn-link btn-xs', textContent: t('Kosongkan semua', 'Clear all') });
-    all.onclick = () => { setFilters({}); document.getElementById('q').value = ''; note.textContent = ''; render(); };
+    all.onclick = () => { document.getElementById('q').value = ''; note.textContent = ''; setState({}); };
     chips.append(all);
   }
   if (active.length) chips.prepend(el('span', { className: 'chips-count', textContent: t(`${hits.length} hasil · `, `${hits.length} result${hits.length === 1 ? '' : 's'} · `) }));
 
-  rows.innerHTML = hits.map((p, i) =>
-    `<tr><td>${i + 1}.</td><td><a href="semak.html?no=${p.no}" title="Semak status">${p.no}</a></td><td>${p.nama}</td><td>${p.jenis}</td><td>${p.peringkat}</td>` +
-    `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span></button></td></tr>`).join('');
+  // Say when a near spelling found the names.
+  const fuzzyNote = document.getElementById('fuzzy-note');
+  fuzzyNote.textContent = (state.nama || state.namaAny.length) && applyFilters(PERTUBUHAN, state, { fuzzy: false }).length < hits.length
+    ? t('Termasuk nama dengan ejaan hampir sama.', 'Includes names with a similar spelling.') : '';
+
+  rows.innerHTML = hits.map((p, i) => {
+    const days = PENDING.includes(p.status) ? ` <small class="text-muted">· ${daysAtStage(p)} ${t('hari', 'days')}</small>` : '';
+    return `<tr><td>${i + 1}.</td><td><a href="semak.html?no=${p.no}" title="Semak status">${p.no}</a></td><td>${p.nama}</td><td>${p.jenis}</td><td>${p.peringkat}</td>` +
+      `<td><button type="button" class="btn-link status-ai" data-status="${p.status}" title="Terangkan dengan AI">${p.status} <span class="glyphicon glyphicon-question-sign"></span></button>${days}</td></tr>`;
+  }).join('');
 
   // No results: say which filter to drop, and how many results that would give.
   const help = document.getElementById('empty-help');
@@ -105,13 +132,13 @@ function render() {
   if (!hits.length) {
     const box = el('div', { className: 'empty-help' });
     box.append(el('b', { textContent: t('Tiada pertubuhan sepadan dengan semua tapisan.', 'No organisation matches all the filters.') }));
-    const rel = relaxations(PERTUBUHAN, q);
+    const rel = relaxations(PERTUBUHAN, state);
     if (rel.length) {
       box.append(el('span', { textContent: t(' Cuba:', ' Try:') }));
       rel.forEach(r => {
         const b = el('button', { type: 'button', className: 'btn btn-default btn-sm' });
-        b.append(t('tanpa ', 'without '), el('span', { textContent: q[r.drop] }), t(` (${r.count} hasil)`, ` (${r.count} result${r.count === 1 ? '' : 's'})`));
-        b.onclick = () => clearField(r.drop);
+        b.append(t('tanpa "', 'without "'), ...tagParts(r.drop, state[r.drop]), `"` + t(` (${r.count} hasil)`, ` (${r.count} result${r.count === 1 ? '' : 's'})`));
+        b.onclick = () => clearKey(r.drop);
         box.append(' ', b);
       });
     }
@@ -124,25 +151,25 @@ document.getElementById('qs').onsubmit = async e => {
   e.preventDefault();
   const text = document.getElementById('q').value.trim(), btn = e.target.querySelector('button');
   note.textContent = '';
-  if (!text) { setFilters({}); return render(); }
+  if (!text) return setState({});
   const parsed = parseQuery(text, PERTUBUHAN);
-  if (!parsed.needsAI) { setFilters(parsed.filters); return render(); }
+  if (!parsed.needsAI) return setState(parsed.filters);
   btn.disabled = true;
   note.textContent = t('Memahami carian anda dengan AI…', 'Understanding your search with AI…');
   try {
     const r = await fetch('/api/search', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ q: text }) });
     const j = await r.json();
     if (!r.ok) throw new Error(j.error);
-    setFilters(j);
+    // Keep what we understood locally (groups, exclusions, time) and add what the AI read.
+    setState({ ...parsed.filters, ...Object.fromEntries(['no', 'nama', 'status', 'peringkat'].filter(k => j[k]).map(k => [k, j[k]])) });
     // The tags show exactly what was applied; the model's own summary can claim filters it didn't set.
     note.textContent = t('✓ Difahami dengan bantuan AI — semak tapisan di atas.', '✓ Understood with AI — check the filters above.');
   } catch {
     // AI unavailable: keep what we understood and search the remaining words as a name.
-    setFilters({ ...parsed.filters, nama: parsed.leftover.toUpperCase() });
+    setState({ ...parsed.filters, nama: parsed.leftover.toUpperCase() });
     note.textContent = t('AI tidak tersedia — carian menggunakan kata kunci sahaja.', 'AI unavailable — searched by keywords only.');
   }
   btn.disabled = false;
-  render();
 };
 
 // Status explainer: clicking a status asks the assistant what it means and what to do next.
@@ -152,8 +179,8 @@ rows.onclick = e => {
     ? `What does the status "${b.dataset.status}" mean and what should the applicant do next?`
     : `Apakah maksud status "${b.dataset.status}" dan apa yang perlu dilakukan oleh pemohon seterusnya?`);
 };
-f.onsubmit = e => { e.preventDefault(); render(); };
-f.onreset = () => setTimeout(render);
+f.onsubmit = e => { e.preventDefault(); state = { ...state, ...Object.fromEntries(new FormData(f)) }; render(); };
+f.onreset = () => setTimeout(() => setState({}));
 render();
 document.addEventListener('langchange', render);
 </script>

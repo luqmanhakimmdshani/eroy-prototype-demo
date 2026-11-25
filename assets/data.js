@@ -29,12 +29,18 @@ function timeline(p) {
   if (p.status === 'Kuiri Pendaftaran') steps.push('Kuiri Pendaftaran');
   steps.push(FINAL.includes(p.status) ? p.status : 'Keputusan');
   const reached = FINAL.includes(p.status) ? steps.length - 1 : steps.indexOf(p.status);
-  // Recent, deterministic dates: the current stage started 2-8 days ago, earlier stages ~9 days apart.
+  // Recent, deterministic dates: the current stage started 1-45 days ago, earlier stages ~9 days apart.
   const DAY = 86400000, today = new Date(new Date().toDateString()).getTime();
-  const start = today - (reached * 9 + 2 + Number(p.no.slice(-3)) % 7) * DAY;
+  const start = today - (reached * 9 + 1 + (Number(p.no.slice(-3)) * 13) % 45) * DAY;
   return steps.map((label, i) => ({
     label,
     state: i < reached || (i === reached && FINAL.includes(p.status)) ? 'done' : i === reached ? 'current' : 'todo',
     date: i <= reached ? new Date(start + i * 9 * DAY) : null,
   }));
+}
+
+// Whole days since the application reached its current stage.
+function daysAtStage(p) {
+  const cur = timeline(p).filter(s => s.date).pop();
+  return Math.round((Date.now() - cur.date.getTime()) / 86400000);
 }
