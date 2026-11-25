@@ -61,20 +61,45 @@ const DOC_SLOTS = [
   { id: 'kp_bendahari', ms: 'Salinan KP Bendahari', en: 'Treasurer IC copy', types: ['pdf', 'jpg', 'png'], required: true },
   { id: 'logo', ms: 'Logo Pertubuhan (pilihan)', en: 'Organisation logo (optional)', types: ['jpg', 'png'], required: false },
 ];
-const MAGIC = { pdf: [0x25, 0x50, 0x44, 0x46], png: [0x89, 0x50, 0x4e, 0x47], jpg: [0xff, 0xd8, 0xff] };
+const MAGIC = { pdf: [0x25, 0x50, 0x44, 0x46], png: [0x89, 0x50, 0x4e, 0x47], jpg: [0xff, 0xd8, 0xff], zip: [0x50, 0x4b, 0x03, 0x04] };
+// What a file really is, from its first bytes (Word .docx files are zip archives).
+const KIND_NAMES = { pdf: ['dokumen PDF', 'a PDF document'], png: ['gambar PNG', 'a PNG picture'], jpg: ['gambar JPG', 'a JPG picture'],
+                     zip: ['dokumen Word / fail zip', 'a Word document / zip file'] };
+const sniff = head => Object.keys(MAGIC).find(k => MAGIC[k].every((b, i) => head[i] === b)) || null;
 
 // f = { name, size, head: Uint8Array (first bytes), width?, height? }
+// Each issue: { ok, ms, en } plus, when something is wrong, { fixMs, fixEn }: how to put it right.
 function checkFile(f, slot) {
   const issues = [];
-  const add = (ok, ms, en) => issues.push({ ok, ms, en });
+  const add = (ok, ms, en, fixMs, fixEn) => issues.push({ ok, ms, en, ...(fixMs ? { fixMs, fixEn } : {}) });
   const ext = (f.name.split('.').pop() || '').toLowerCase().replace('jpeg', 'jpg');
   const allowed = slot.types.map(t => t.toUpperCase()).join('/');
-  if (!slot.types.includes(ext)) add(false, `Format mesti ${allowed} (fail anda .${ext}).`, `Format must be ${allowed} (your file is .${ext}).`);
-  else if (!(MAGIC[ext] || []).every((b, i) => f.head[i] === b)) add(false, `Kandungan fail bukan ${ext.toUpperCase()} sebenar — mungkin rosak atau dinamakan semula.`, `File content is not a real ${ext.toUpperCase()} — it may be corrupt or renamed.`);
-  if (f.size === 0) add(false, 'Fail kosong.', 'File is empty.');
-  else if (f.size > 5 * MB) add(false, `Saiz ${(f.size / MB).toFixed(1)}MB melebihi had 5MB.`, `Size ${(f.size / MB).toFixed(1)}MB exceeds the 5MB limit.`);
+  const pdfOnly = slot.types.length === 1 && slot.types[0] === 'pdf';
+  const real = sniff(f.head);
+  if (!slot.types.includes(ext)) {
+    add(false, `Ditolak: format mesti ${allowed} (fail anda .${ext}).`, `Rejected: format must be ${allowed} (your file is .${ext}).`,
+      pdfOnly ? 'Buka dokumen dan simpan semula sebagai PDF (Fail > Simpan Sebagai > PDF), kemudian masukkan semula.'
+              : `Simpan atau eksport semula dalam format ${allowed}, kemudian masukkan semula.`,
+      pdfOnly ? 'Open the document and save it again as PDF (File > Save As > PDF), then add it again.'
+              : `Save or export it again as ${allowed}, then add it again.`);
+  } else if (f.size > 0 && real !== ext) {
+    const what = real ? KIND_NAMES[real] : ['fail yang rosak atau format lain', 'a damaged file or another format'];
+    add(false, `Ditolak: fail ini sebenarnya ${what[0]} yang dinamakan .${ext}.`, `Rejected: this file is actually ${what[1]} named .${ext}.`,
+      `Menukar nama sambungan tidak menukar format. Eksport atau cetak semula dokumen asal sebagai ${ext.toUpperCase()}.`,
+      `Renaming the extension doesn't change the format. Export or print the original again as ${ext.toUpperCase()}.`);
+  }
+  if (f.size === 0) {
+    add(false, 'Ditolak: fail kosong.', 'Rejected: the file is empty.',
+      'Imbas atau muat turun semula dokumen, kemudian masukkan semula.', 'Scan or download the document again, then add it again.');
+  } else if (f.size > 5 * MB) {
+    add(false, `Ditolak: saiz ${(f.size / MB).toFixed(1)}MB melebihi had 5MB.`, `Rejected: size ${(f.size / MB).toFixed(1)}MB exceeds the 5MB limit.`,
+      'Kecilkan saiz: imbas semula pada resolusi lebih rendah (150–200 dpi) atau mampatkan PDF, kemudian masukkan semula.',
+      'Make it smaller: scan again at a lower resolution (150–200 dpi) or compress the PDF, then add it again.');
+  }
   if (slot.id === 'logo' && f.width && (f.width < 500 || f.height < 500 || f.width !== f.height)) {
-    add('warn', `Resolusi ${f.width}x${f.height}; disyorkan 500x500 piksel.`, `Resolution ${f.width}x${f.height}; 500x500 pixels is recommended.`);
+    add('warn', `Amaran: resolusi ${f.width}x${f.height}; disyorkan 500x500 piksel.`, `Warning: resolution ${f.width}x${f.height}; 500x500 pixels is recommended.`,
+      'Boleh diterima, tetapi gunakan logo segi empat sama sekurang-kurangnya 500x500 piksel supaya jelas pada sijil.',
+      'Accepted, but use a square logo of at least 500x500 pixels so it stays sharp.');
   }
   if (!issues.length) add(true, `Sedia untuk dimuat naik (${fmtSize(f.size)}).`, `Ready to upload (${fmtSize(f.size)}).`);
   return { ok: issues.every(i => i.ok !== false), issues };

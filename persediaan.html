@@ -165,7 +165,11 @@ function renderDocs() {
     const good = mine.find(f => check(f).ok);
     let state, note;
     if (good) { state = 'ok'; note = good.file.name; }
-    else if (mine.length) { state = 'fail'; note = t('Ada, tetapi perlu dibetulkan', 'Provided, but needs fixing'); }
+    else if (mine.length) {
+      state = 'fail';
+      const why = check(mine[0]).issues.find(i => i.ok === false);
+      note = t('Perlu dibetulkan — ', 'Needs fixing — ') + t(why.ms, why.en).replace(/^(Ditolak|Rejected): /, '');
+    }
     else { state = s.required ? 'missing' : 'optional'; note = s.required ? t('Belum ada', 'Not provided yet') : t('Pilihan', 'Optional'); }
     const li = el('li', { className: 'need-' + state });
     li.append(el('span', { className: 'need-icon', textContent: { ok: '✓', fail: '!', missing: '✗', optional: '–' }[state] }),
@@ -200,10 +204,20 @@ function renderDocs() {
       guess: t('Salinan KP — sila sahkan jawatan', 'IC copy — please confirm whose'),
       manual: t('Dipilih oleh anda', 'Chosen by you'),
     }[f.by] || t('Tidak dapat dikenal pasti — sila pilih jenis dokumen', 'Could not recognise — please choose the document type') });
+    const why = f.by === 'guess'
+      ? t('Ini salinan KP, tetapi nama fail tidak menyebut jawatan. Sahkan jawatan dalam senarai di atas, atau namakan fail dengan jelas (cth. kp_bendahari.jpg).',
+          'This is an IC copy, but the file name does not say whose. Confirm in the list above, or name the file clearly (e.g. kp_bendahari.jpg).')
+      : !f.slot ? t('Nama fail tidak menunjukkan jenis dokumen dan tiada teks yang boleh dibaca (cth. gambar atau imbasan). Pilih jenis dokumen di atas, atau namakan fail dengan jelas (cth. kp_bendahari.jpg).',
+                    'The file name does not say what it is and it has no readable text (e.g. a photo or scan). Choose the document type above, or name the file clearly (e.g. kp_bendahari.jpg).')
+      : null;
     const checks = el('div', { className: 'doc-checks' });
-    if (r) r.issues.forEach(i => checks.append(el('div', {
-      className: i.ok === true ? 'text-success' : i.ok === 'warn' ? 'text-warning' : 'text-danger',
-      textContent: (i.ok === true ? '✓ ' : i.ok === 'warn' ? '! ' : '✗ ') + t(i.ms, i.en) })));
+    if (r) r.issues.forEach(i => {
+      checks.append(el('div', {
+        className: i.ok === true ? 'text-success' : i.ok === 'warn' ? 'text-warning' : 'text-danger',
+        textContent: (i.ok === true ? '✓ ' : i.ok === 'warn' ? '! ' : '✗ ') + t(i.ms, i.en) }));
+      if (i.fixMs) checks.append(el('div', { className: 'doc-fix', textContent: t('Cara membetulkan: ', 'How to fix: ') + t(i.fixMs, i.fixEn) }));
+    });
+    if (why) checks.append(el('div', { className: 'doc-fix', textContent: t('Kenapa: ', 'Why: ') + why }));
     li.append(head, sel, how, checks);
     list.append(li);
   }
